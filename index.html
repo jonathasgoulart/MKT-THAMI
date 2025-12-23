@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THAMI Marketing Assistant - AI-Powered Content Creation</title>
+    <meta name="description"
+        content="AI-powered marketing assistant for THAMI - Generate social media posts, emails, and press releases">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- PDF.js for PDF text extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">🎵</div>
+                <div class="logo-text">
+                    <h1>THAMI</h1>
+                    <span class="subtitle">Marketing Assistant</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn" data-view="dashboard" aria-label="Dashboard">
+                    <span class="icon">💬</span>
+                    <span class="label">Chat</span>
+                </button>
+                <button class="nav-btn" data-view="profile" aria-label="Profile Manager">
+                    <span class="icon">👤</span>
+                    <span class="label">Perfil</span>
+                </button>
+                <button class="nav-btn" data-view="knowledge" aria-label="Briefings">
+                    <span class="icon">📋</span>
+                    <span class="label">Briefings</span>
+                </button>
+                <button class="nav-btn settings-btn" data-view="settings" aria-label="Settings">
+                    <span class="icon">⚙️</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-main">
+        <!-- Dashboard/Chat View -->
+        <section id="dashboard-view" class="view-section active">
+            <div class="chat-dashboard">
+                <!-- Platform Selector -->
+                <div class="platform-selector">
+                    <div class="platform-header">
+                        <h2>💬 Criar Conteúdo</h2>
+                        <div class="platform-dropdown">
+                            <label for="platform-select">Plataforma:</label>
+                            <select id="platform-select">
+                                <option value="instagram">📸 Instagram</option>
+                                <option value="twitter">🐦 Twitter/X</option>
+                                <option value="facebook">👍 Facebook</option>
+                                <option value="tiktok">🎬 TikTok</option>
+                                <option value="youtube">▶️ YouTube</option>
+                                <option value="email">✉️ Email/Newsletter</option>
+                                <option value="press">📰 Press Release</option>
+                                <option value="all">🌐 Multiplataforma</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="icon-btn" id="clear-chat-btn" title="Nova conversa">🔄</button>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Messages will be rendered here -->
+                </div>
+
+                <!-- Quick Actions (only shown when empty) -->
+                <div class="chat-quick-actions" id="chat-quick-actions">
+                    <button class="quick-action-btn" data-prompt="Preciso de um post estratégico">
+                        📝 Post Estratégico
+                    </button>
+                    <button class="quick-action-btn"
+                        data-prompt="Vou lançar uma música nova e preciso de uma estratégia completa">
+                        🚀 Lançamento
+                    </button>
+                    <button class="quick-action-btn" data-prompt="Preciso divulgar um show">
+                        🎤 Show/Evento
+                    </button>
+                    <button class="quick-action-btn" data-prompt="Me sugira ideias criativas para esta semana">
+                        💡 Ideias
+                    </button>
+                    <button class="quick-action-btn" data-prompt="Quero criar conteúdo de bastidores">
+                        🎬 Bastidores
+                    </button>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea id="chat-input" placeholder="Me conta o que você quer criar..." rows="1"></textarea>
+                        <button class="chat-send-btn" id="chat-send-btn">
+                            <span>➤</span>
+                        </button>
+                    </div>
+                    <p class="chat-hint">Pressione Enter para enviar • Shift+Enter para nova linha</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile View -->
+
+        <section id="profile-view" class="view-section">
+            <div class="profile-container">
+                <h2 class="section-title">Gerenciar Perfil da THAMI</h2>
+                <p class="section-description">Mantenha as informações atualizadas para gerar conteúdo mais relevante e
+                    personalizado.</p>
+
+                <div class="profile-tabs">
+                    <button class="tab-btn active" data-tab="bio">Biografia</button>
+                    <button class="tab-btn" data-tab="achievements">Conquistas</button>
+                    <button class="tab-btn" data-tab="events">Eventos</button>
+                    <button class="tab-btn" data-tab="releases">Lançamentos</button>
+                    <button class="tab-btn" data-tab="social">Redes Sociais</button>
+                </div>
+
+                <div class="profile-content">
+                    <div id="profile-form">
+                        <!-- Profile form will be dynamically generated -->
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn-secondary" id="reset-profile-btn">Restaurar Padrão</button>
+                        <button class="btn-primary" id="save-profile-btn">Salvar Alterações</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Briefings View -->
+        <section id="knowledge-view" class="view-section">
+            <div class="knowledge-container">
+                <div class="knowledge-header">
+                    <div>
+                        <h2 class="section-title">📋 Briefings</h2>
+                        <p class="section-description">Documentos e informações que a IA usa para criar conteúdo</p>
+                    </div>
+                    <button class="btn-primary" id="add-knowledge-btn">
+                        <span>+</span> Adicionar Briefing
+                    </button>
+                </div>
+
+                <!-- Add/Edit Form -->
+                <div class="knowledge-form-container" id="knowledge-form-container" style="display: none;">
+                    <div class="settings-card">
+                        <h3 id="knowledge-form-title">Novo Documento</h3>
+                        <div class="form-group">
+                            <label for="knowledge-title">Título</label>
+                            <input type="text" id="knowledge-title"
+                                placeholder="Ex: Estratégia de Lançamento Q1 2025" />
+                        </div>
+                        <div class="form-group">
+                            <label for="knowledge-category">Categoria</label>
+                            <select id="knowledge-category">
+                                <option value="strategy">🎯 Estratégia de Marketing</option>
+                                <option value="briefing">📋 Briefing de Campanha</option>
+                                <option value="voice">🎤 Tom de Voz</option>
+                                <option value="campaign">📢 Campanha Ativa</option>
+                                <option value="release">🎵 Lançamento</option>
+                                <option value="audience">👥 Público-Alvo</option>
+                                <option value="hashtags">#️⃣ Hashtags e Keywords</option>
+                                <option value="other">📝 Outro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Importar arquivo (opcional)</label>
+                            <div class="file-upload-area" id="file-upload-area">
+                                <input type="file" id="knowledge-file" accept=".txt,.md,.pdf" hidden />
+                                <button type="button" class="btn-secondary file-upload-btn" id="file-upload-btn">
+                                    📄 Escolher arquivo (.txt, .md, .pdf)
+                                </button>
+                                <span class="file-name" id="file-name"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="knowledge-content">Conteúdo</label>
+                            <textarea id="knowledge-content" rows="8"
+                                placeholder="Cole aqui o briefing ou importe um arquivo acima..."></textarea>
+                        </div>
+                        <div class="form-group" style="flex-direction: row; gap: 10px;">
+                            <button class="btn-secondary" id="cancel-knowledge-btn">Cancelar</button>
+                            <button class="btn-primary" id="save-knowledge-btn">Salvar Documento</button>
+                        </div>
+                        <input type="hidden" id="knowledge-edit-id" value="" />
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="knowledge-controls">
+                    <input type="search" id="knowledge-search" placeholder="Buscar documentos..." />
+                    <select id="knowledge-filter">
+                        <option value="all">Todas as Categorias</option>
+                        <option value="strategy">🎯 Estratégia</option>
+                        <option value="briefing">📋 Briefing</option>
+                        <option value="voice">🎤 Tom de Voz</option>
+                        <option value="campaign">📢 Campanha</option>
+                        <option value="release">🎵 Lançamento</option>
+                        <option value="audience">👥 Público-Alvo</option>
+                        <option value="hashtags">#️⃣ Hashtags</option>
+                        <option value="other">📝 Outro</option>
+                    </select>
+                </div>
+
+                <!-- Stats -->
+                <div class="knowledge-stats" id="knowledge-stats">
+                    <span>📄 0 documentos</span>
+                    <span>📝 0 caracteres de contexto</span>
+                </div>
+
+                <!-- Documents List -->
+                <div id="knowledge-list" class="knowledge-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">🎯</div>
+                        <p>Nenhuma estratégia cadastrada ainda</p>
+                        <p class="empty-hint">Adicione briefings, estratégias e conteúdos para alimentar a IA</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings View -->
+        <section id="settings-view" class="view-section">
+            <div class="settings-container">
+                <h2 class="section-title">Configurações</h2>
+
+                <div class="settings-card">
+                    <h3>🤖 Provedor de IA</h3>
+                    <p class="settings-description">Escolha qual serviço de IA usar para gerar conteúdo.</p>
+
+                    <div class="form-group">
+                        <label for="ai-provider-select">Provedor Ativo</label>
+                        <select id="ai-provider-select" style="padding: 12px; font-size: 1rem;">
+                            <option value="groq">🚀 Groq (Llama 3.3 - Gratuito e Rápido)</option>
+                            <option value="gemini">✨ Google Gemini</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group"
+                        style="flex-direction: row; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <input type="checkbox" id="manual-mode-toggle"
+                            style="width: 20px; height: 20px; cursor: pointer;" />
+                        <label for="manual-mode-toggle" style="margin: 0; cursor: pointer; font-weight: 500;">
+                            Ativar Modo Manual (Sem IA)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Groq API Key -->
+                <div class="settings-card" id="groq-settings">
+                    <h3>🚀 API Key do Groq</h3>
+                    <p class="settings-description">Configure sua chave de API do Groq para usar IA gratuita e
+                        ultra-rápida.</p>
+                    <div class="form-group">
+                        <input type="password" id="groq-api-key-input"
+                            placeholder="Cole sua Groq API key aqui (gsk_...)" />
+                        <div style="display: flex; gap: 10px; width: 100%;">
+                            <button class="btn-primary" id="save-groq-key-btn" style="flex: 2;">Salvar API Key</button>
+                            <button class="btn-secondary" id="test-groq-btn" style="flex: 1;">Testar Conexão</button>
+                        </div>
+                    </div>
+                    <p class="settings-hint">
+                        <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Obter API Key GRATUITA no
+                            Groq →</a>
+                    </p>
+                    <div id="groq-status" class="status-message"></div>
+                </div>
+
+                <!-- Gemini API Key (backup) -->
+                <div class="settings-card" id="gemini-settings" style="opacity: 0.7;">
+                    <h3>✨ API Key do Gemini (Backup)</h3>
+                    <p class="settings-description">Configure sua chave do Google Gemini como opção alternativa.</p>
+                    <div class="form-group">
+                        <input type="password" id="api-key-input" placeholder="Cole sua API key aqui..." />
+                        <div style="display: flex; gap: 10px; width: 100%;">
+                            <button class="btn-primary" id="save-api-key-btn" style="flex: 2;">Salvar API Key</button>
+                            <button class="btn-secondary" id="test-connection-btn" style="flex: 1;">Testar
+                                Conexão</button>
+                        </div>
+                    </div>
+                    <p class="settings-hint">
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Obter API Key no
+                            AI Studio →</a>
+                    </p>
+                    <div id="api-key-status" class="status-message"></div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>💾 Dados</h3>
+                    <p class="settings-description">Gerencie seus dados locais</p>
+                    <div class="settings-actions">
+                        <button class="btn-secondary" id="export-data-btn">Exportar Dados</button>
+                        <button class="btn-secondary" id="import-data-btn">Importar Dados</button>
+                        <button class="btn-danger" id="clear-data-btn">Limpar Todos os Dados</button>
+                    </div>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;" />
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="error-trap.js"></script>
+    <script src="thami-profile.js"></script>
+    <script src="ai-generator.js"></script>
+    <script src="knowledge-base.js"></script>
+    <script src="chat-assistant.js"></script>
+    <script src="content-manager.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

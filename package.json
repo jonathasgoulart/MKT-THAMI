@@ -1,0 +1,12 @@
+{
+    "name": "thami-marketing-assistant",
+    "version": "1.0.0",
+    "description": "AI-powered marketing assistant for THAMI",
+    "private": true,
+    "engines": {
+        "node": "20.x"
+    },
+    "scripts": {
+        "build": "echo 'Build complete'"
+    }
+}
