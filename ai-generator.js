@@ -43,6 +43,16 @@ class AIGenerator {
     }
 
     hasApiKey() {
+        // In production (Netlify), API key is on the server
+        const isProduction = window.location.hostname !== 'localhost' &&
+            window.location.hostname !== '127.0.0.1' &&
+            window.location.protocol !== 'file:';
+
+        if (isProduction) {
+            return true; // Key is configured on server
+        }
+
+        // Local development - check localStorage
         if (this.provider === 'groq') {
             return this.groqApiKey.length > 0;
         }
