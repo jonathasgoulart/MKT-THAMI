@@ -1560,62 +1560,78 @@ a:hover {
 
     /* Chat Dashboard Mobile */
     .chat-dashboard {
-        height: calc(100vh - 70px);
-        border-radius: var(--radius-sm);
+        height: calc(100vh - 55px);
+        border-radius: 0;
     }
 
     .platform-selector {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
         gap: var(--spacing-xs);
-        padding: var(--spacing-sm);
+        padding: 8px 12px;
     }
 
     .platform-header {
-        flex-direction: column;
+        flex-direction: row;
+        align-items: center;
         gap: var(--spacing-xs);
     }
 
     .platform-header h2 {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    /* Hide the refresh/image button on mobile */
+    .platform-selector .btn-icon,
+    .platform-selector button[title*="refresh"],
+    .platform-selector button[title*="Refresh"],
+    .refresh-btn,
+    #refresh-context-btn {
+        display: none !important;
     }
 
     .platform-dropdown {
-        width: 100%;
+        flex: 1;
     }
 
     .platform-dropdown select {
         width: 100%;
         min-width: auto;
+        padding: 6px 10px;
+        font-size: 0.85rem;
     }
 
-    /* Chat Messages Mobile */
+    /* Chat Messages Mobile - more compact */
     .chat-messages {
-        padding: var(--spacing-sm);
+        padding: 8px;
+        flex: 1;
+        min-height: 0;
     }
 
     .chat-message {
         max-width: 95%;
-        padding: var(--spacing-sm);
-        font-size: 0.9rem;
+        padding: 10px 12px;
+        font-size: 0.85rem;
+        margin-bottom: 8px;
     }
 
-    /* Quick Actions Mobile */
+    /* Quick Actions Mobile - more compact */
     .chat-quick-actions {
-        padding: var(--spacing-sm);
-        gap: var(--spacing-xs);
+        padding: 8px;
+        gap: 6px;
         flex-wrap: wrap;
     }
 
     .quick-action-btn {
-        padding: 6px 10px;
-        font-size: 0.8rem;
+        padding: 5px 8px;
+        font-size: 0.75rem;
         flex: 0 0 auto;
     }
 
-    /* Chat Input Mobile */
+    /* Chat Input Mobile - always visible */
     .chat-input-container {
-        padding: var(--spacing-sm);
+        padding: 8px;
     }
 
     .chat-input-wrapper textarea {
