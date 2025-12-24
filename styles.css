@@ -1555,57 +1555,52 @@ a:hover {
 
     /* Main Content Mobile */
     .app-main {
-        padding: var(--spacing-xs);
+        padding: 0;
     }
 
-    /* Chat Dashboard Mobile */
+    /* Chat Dashboard Mobile - fill screen */
     .chat-dashboard {
-        height: calc(100vh - 55px);
+        height: calc(100vh - 50px);
+        height: calc(100dvh - 50px);
         border-radius: 0;
+        display: flex;
+        flex-direction: column;
     }
 
+    /* Platform Selector - Super Compact */
     .platform-selector {
-        flex-direction: row;
+        display: flex;
         align-items: center;
-        gap: var(--spacing-xs);
+        gap: 8px;
         padding: 8px 12px;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        flex-shrink: 0;
     }
 
-    .platform-header {
-        flex-direction: row;
-        align-items: center;
-        gap: var(--spacing-xs);
+    .platform-label {
+        font-size: 1.2rem;
     }
 
-    .platform-header h2 {
-        font-size: 0.9rem;
-        margin: 0;
-    }
-
-    /* Hide the refresh/image button on mobile */
-    .platform-selector .btn-icon,
-    .platform-selector button[title*="refresh"],
-    .platform-selector button[title*="Refresh"],
-    .refresh-btn,
-    #refresh-context-btn {
-        display: none !important;
-    }
-
-    .platform-dropdown {
+    .platform-selector select {
         flex: 1;
-    }
-
-    .platform-dropdown select {
-        width: 100%;
-        min-width: auto;
         padding: 6px 10px;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-color);
+        background: var(--bg-primary);
     }
 
-    /* Chat Messages Mobile - more compact */
+    .platform-header,
+    .platform-dropdown label {
+        display: none;
+    }
+
+    /* Chat Messages - scrollable area */
     .chat-messages {
-        padding: 8px;
         flex: 1;
+        overflow-y: auto;
+        padding: 8px;
         min-height: 0;
     }
 
@@ -1616,28 +1611,51 @@ a:hover {
         margin-bottom: 8px;
     }
 
-    /* Quick Actions Mobile - more compact */
+    /* Quick Actions - compact */
     .chat-quick-actions {
-        padding: 8px;
-        gap: 6px;
+        padding: 6px 8px;
+        gap: 4px;
         flex-wrap: wrap;
+        flex-shrink: 0;
     }
 
     .quick-action-btn {
-        padding: 5px 8px;
-        font-size: 0.75rem;
+        padding: 4px 8px;
+        font-size: 0.7rem;
         flex: 0 0 auto;
     }
 
-    /* Chat Input Mobile - always visible */
+    /* Chat Input - fixed at bottom */
     .chat-input-container {
         padding: 8px;
+        flex-shrink: 0;
+        background: var(--bg-primary);
+        border-top: 1px solid var(--border-color);
+    }
+
+    .chat-input-wrapper {
+        margin-bottom: 6px;
     }
 
     .chat-input-wrapper textarea {
         font-size: 16px;
-        /* Prevents iOS zoom on focus */
-        padding: var(--spacing-sm);
+        padding: 10px;
+    }
+
+    /* Refresh Button - at bottom */
+    .refresh-btn-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        padding: 8px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        cursor: pointer;
     }
 
     .chat-hint {

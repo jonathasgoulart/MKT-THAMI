@@ -53,25 +53,19 @@
         <!-- Dashboard/Chat View -->
         <section id="dashboard-view" class="view-section active">
             <div class="chat-dashboard">
-                <!-- Platform Selector -->
+                <!-- Platform Selector - Compact -->
                 <div class="platform-selector">
-                    <div class="platform-header">
-                        <h2>💬 Criar Conteúdo</h2>
-                        <div class="platform-dropdown">
-                            <label for="platform-select">Plataforma:</label>
-                            <select id="platform-select">
-                                <option value="instagram">📸 Instagram</option>
-                                <option value="twitter">🐦 Twitter/X</option>
-                                <option value="facebook">👍 Facebook</option>
-                                <option value="tiktok">🎬 TikTok</option>
-                                <option value="youtube">▶️ YouTube</option>
-                                <option value="email">✉️ Email/Newsletter</option>
-                                <option value="press">📰 Press Release</option>
-                                <option value="all">🌐 Multiplataforma</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button class="icon-btn" id="clear-chat-btn" title="Nova conversa">🔄</button>
+                    <span class="platform-label">📸</span>
+                    <select id="platform-select">
+                        <option value="instagram">Instagram</option>
+                        <option value="twitter">Twitter/X</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="email">Email</option>
+                        <option value="press">Press Release</option>
+                        <option value="all">Multiplataforma</option>
+                    </select>
                 </div>
 
                 <!-- Chat Messages Area -->
@@ -82,14 +76,14 @@
                 <!-- Quick Actions (only shown when empty) -->
                 <div class="chat-quick-actions" id="chat-quick-actions">
                     <button class="quick-action-btn" data-prompt="Preciso de um post estratégico">
-                        📝 Post Estratégico
+                        📝 Post
                     </button>
                     <button class="quick-action-btn"
                         data-prompt="Vou lançar uma música nova e preciso de uma estratégia completa">
                         🚀 Lançamento
                     </button>
                     <button class="quick-action-btn" data-prompt="Preciso divulgar um show">
-                        🎤 Show/Evento
+                        🎤 Show
                     </button>
                     <button class="quick-action-btn" data-prompt="Me sugira ideias criativas para esta semana">
                         💡 Ideias
@@ -107,7 +101,8 @@
                             <span>➤</span>
                         </button>
                     </div>
-                    <p class="chat-hint">Pressione Enter para enviar • Shift+Enter para nova linha</p>
+                    <button class="refresh-btn-mobile" id="clear-chat-btn" title="Nova conversa">🔄 Nova
+                        conversa</button>
                 </div>
             </div>
         </section>
