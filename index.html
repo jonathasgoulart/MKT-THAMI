@@ -4,16 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>THAMI Marketing Assistant - AI-Powered Content Creation</title>
+    <title>Artist Marketing - AI-Powered Content Creation</title>
     <meta name="description"
-        content="AI-powered marketing assistant for THAMI - Generate social media posts, emails, and press releases">
+        content="AI-powered marketing assistant for artists - Generate social media posts, emails, and press releases">
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#10b981">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="THAMI">
+    <meta name="apple-mobile-web-app-title" content="Artist MKT">
     <link rel="apple-touch-icon" href="icons/icon-192.svg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,17 +67,11 @@
     <header class="app-header">
         <div class="header-content">
             <div class="logo-section">
-                <div class="logo-icon">🎵</div>
+                <div class="logo-icon">🎤</div>
                 <div class="logo-text">
-                    <h1>THAMI</h1>
-                    <span class="subtitle">Marketing Assistant</span>
+                    <h1>Artist Marketing</h1>
+                    <span class="subtitle">AI Assistant</span>
                 </div>
-            </div>
-            <!-- User Info -->
-            <div class="user-info" id="user-info" style="display: none;">
-                <span class="user-email" id="header-user-email"></span>
-                <a href="/admin.html" class="admin-link" id="admin-link" style="display: none;">🔧 Admin</a>
-                <button class="logout-btn" id="header-logout-btn" title="Sair">🚪</button>
             </div>
             <nav class="header-nav">
                 <button class="nav-btn" data-view="dashboard" aria-label="Dashboard">
@@ -96,6 +90,12 @@
                     <span class="icon">⚙️</span>
                 </button>
             </nav>
+            <!-- User Info -->
+            <div class="user-info" id="user-info" style="display: none;">
+                <span class="user-email" id="header-user-email"></span>
+                <a href="/admin.html" class="admin-link" id="admin-link" style="display: none;">🔧 Admin</a>
+                <button class="logout-btn" id="header-logout-btn" title="Sair">🚪</button>
+            </div>
         </div>
     </header>
 
@@ -104,9 +104,9 @@
         <!-- Dashboard/Chat View -->
         <section id="dashboard-view" class="view-section active">
             <div class="chat-dashboard">
-                <!-- Platform Selector - Compact -->
+                <!-- Platform Selector -->
                 <div class="platform-selector">
-                    <span class="platform-label">📸</span>
+                    <span class="platform-label">🎯</span>
                     <select id="platform-select">
                         <option value="instagram">Instagram</option>
                         <option value="twitter">Twitter/X</option>

@@ -1,6 +1,6 @@
 {
-    "name": "THAMI Marketing Assistant",
-    "short_name": "THAMI",
+    "name": "Artist Marketing",
+    "short_name": "ArtistMKT",
     "description": "Assistente de Marketing Digital para Artistas Musicais",
     "start_url": "./index.html",
     "display": "standalone",

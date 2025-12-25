@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Admin - THAMI Marketing Assistant</title>
-    <meta name="description" content="Painel administrativo do THAMI Marketing Assistant">
+    <title>Admin - Artist Marketing</title>
+    <meta name="description" content="Painel administrativo do Artist Marketing">
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
@@ -22,6 +22,9 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+
+    <!-- PDF.js for PDF text extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
         .admin-container {
@@ -444,8 +447,16 @@
                 </div>
                 <div class="form-group">
                     <label for="doc-content">Conteúdo</label>
+                    <div style="margin-bottom: 0.5rem;">
+                        <input type="file" id="doc-file" accept=".txt,.md,.pdf" hidden>
+                        <button type="button" class="btn-secondary" id="upload-file-btn" style="width: 100%;">
+                            📄 Importar arquivo (.txt, .md, .pdf)
+                        </button>
+                        <span id="file-name"
+                            style="display: block; margin-top: 0.5rem; color: var(--text-tertiary); font-size: 0.85rem;"></span>
+                    </div>
                     <textarea id="doc-content" rows="10" required
-                        placeholder="Digite o conteúdo do documento..."></textarea>
+                        placeholder="Digite o conteúdo ou importe um arquivo acima..."></textarea>
                 </div>
                 <div style="display: flex; gap: 1rem; justify-content: flex-end;">
                     <button type="button" class="btn-secondary" id="modal-cancel">Cancelar</button>
@@ -536,6 +547,64 @@
                     closeDocModal();
                 }
             });
+
+            // File upload
+            const uploadBtn = document.getElementById('upload-file-btn');
+            const fileInput = document.getElementById('doc-file');
+            const fileNameSpan = document.getElementById('file-name');
+
+            if (uploadBtn && fileInput) {
+                uploadBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+
+                fileInput.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    fileNameSpan.textContent = file.name + ' (processando...)';
+                    const contentTextarea = document.getElementById('doc-content');
+
+                    const fileName = file.name.toLowerCase();
+
+                    if (fileName.endsWith('.pdf')) {
+                        // PDF file - use PDF.js to extract text
+                        try {
+                            const arrayBuffer = await file.arrayBuffer();
+                            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                            let fullText = '';
+                            for (let i = 1; i <= pdf.numPages; i++) {
+                                const page = await pdf.getPage(i);
+                                const textContent = await page.getTextContent();
+                                const pageText = textContent.items.map(item => item.str).join(' ');
+                                fullText += pageText + '\n\n';
+                            }
+
+                            contentTextarea.value = fullText.trim();
+                            fileNameSpan.textContent = `${file.name} (${pdf.numPages} páginas)`;
+                            showNotification(`PDF "${file.name}" importado com sucesso!`, 'success');
+                        } catch (error) {
+                            console.error('PDF error:', error);
+                            showNotification('Erro ao processar PDF', 'error');
+                            fileNameSpan.textContent = '';
+                        }
+                    } else {
+                        // Text file (.txt, .md)
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            contentTextarea.value = event.target.result;
+                            fileNameSpan.textContent = file.name;
+                            showNotification(`Arquivo "${file.name}" importado!`, 'success');
+                        };
+                        reader.onerror = () => {
+                            showNotification('Erro ao ler arquivo', 'error');
+                            fileNameSpan.textContent = '';
+                        };
+                        reader.readAsText(file);
+                    }
+                });
+            }
         }
 
         // =====================================================
