@@ -34,6 +34,14 @@
         {
             "src": "/api/chat",
             "dest": "/api/chat.js"
+        },
+        {
+            "src": "/login",
+            "dest": "/login.html"
+        },
+        {
+            "src": "/admin",
+            "dest": "/admin.html"
         }
     ]
 }

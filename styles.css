@@ -233,6 +233,55 @@ a:hover {
     display: none;
 }
 
+/* User Info in Header */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding-left: var(--spacing-md);
+    border-left: 1px solid var(--border-color);
+    margin-left: auto;
+}
+
+.user-email {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-link {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.admin-link:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #dc2626;
+}
+
+.logout-btn {
+    padding: 0.4rem 0.6rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.logout-btn:hover {
+    background: var(--bg-secondary);
+    border-color: #ef4444;
+}
+
+
 /* ===================================
    Main Layout
    =================================== */

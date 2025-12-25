@@ -17,7 +17,25 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
 });
 
-function initializeApp() {
+async function initializeApp() {
+    // Initialize Supabase auth (if configured)
+    if (typeof authManager !== 'undefined' && isSupabaseConfigured()) {
+        try {
+            await authManager.initialize();
+            await dataService.initialize();
+
+            // Update UI based on auth state
+            updateAuthUI();
+
+            // Listen for auth changes
+            authManager.onAuthStateChange((event, user) => {
+                updateAuthUI();
+            });
+        } catch (error) {
+            console.log('Supabase not configured, using local mode');
+        }
+    }
+
     // Initialize managers
     profileManager = new ThamiProfile();
     aiGenerator = new AIGenerator(profileManager);
@@ -33,6 +51,7 @@ function initializeApp() {
     setupLibrary();
     setupKnowledge();
     setupSettings();
+    setupAuthButtons();
 
     // Initial render
     updateDashboardStats();
@@ -42,6 +61,47 @@ function initializeApp() {
     // Check API key status
     checkApiKeyStatus();
 }
+
+// Auth UI Update
+function updateAuthUI() {
+    const userInfo = document.getElementById('user-info');
+    const userEmail = document.getElementById('header-user-email');
+    const adminLink = document.getElementById('admin-link');
+
+    if (!userInfo) return;
+
+    if (typeof authManager !== 'undefined' && authManager.isAuthenticated()) {
+        userInfo.style.display = 'flex';
+        userEmail.textContent = authManager.getDisplayName();
+
+        if (authManager.isUserAdmin()) {
+            adminLink.style.display = 'inline-block';
+        } else {
+            adminLink.style.display = 'none';
+        }
+    } else {
+        userInfo.style.display = 'none';
+    }
+}
+
+// Setup auth buttons
+function setupAuthButtons() {
+    const logoutBtn = document.getElementById('header-logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+            if (typeof authManager !== 'undefined' && authManager.isAuthenticated()) {
+                try {
+                    await authManager.signOut();
+                    showToast('Logout realizado com sucesso!', 'success');
+                    window.location.href = '/login.html';
+                } catch (error) {
+                    showToast('Erro ao fazer logout', 'error');
+                }
+            }
+        });
+    }
+}
+
 
 // ===================================
 // Navigation

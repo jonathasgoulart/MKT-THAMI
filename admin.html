@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Admin - THAMI Marketing Assistant</title>
+    <meta name="description" content="Painel administrativo do THAMI Marketing Assistant">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .admin-tab:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .admin-tab.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Document List */
+        .document-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .document-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+        }
+
+        .document-card.global {
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .document-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .document-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .document-category {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-primary);
+            color: white;
+            border-radius: 20px;
+        }
+
+        .document-content {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            max-height: 100px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .document-actions button {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* User List */
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .user-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+        }
+
+        .user-email {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        .user-role.admin {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .user-role.user {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        /* Form Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-tertiary);
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+        }
+
+        .notification.error {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .user-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1>🔧 Painel Administrativo</h1>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span id="admin-user-email" style="color: var(--text-secondary);"></span>
+                <a href="/" class="btn-secondary" style="text-decoration: none;">← Voltar ao App</a>
+                <button class="btn-danger" id="logout-btn">Sair</button>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="global-docs">📚 Base Global</button>
+            <button class="admin-tab" data-tab="users">👥 Usuários</button>
+            <button class="admin-tab" data-tab="stats">📊 Estatísticas</button>
+        </div>
+
+        <!-- Global Documents Section -->
+        <section class="admin-section active" id="global-docs-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2>Base de Conhecimento Global</h2>
+                <button class="btn-primary" id="add-global-doc-btn">+ Novo Documento</button>
+            </div>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Documentos globais são visíveis para todos os usuários da plataforma.
+            </p>
+            <div class="document-list" id="global-docs-list">
+                <div class="loading">Carregando...</div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section class="admin-section" id="users-section">
+            <h2 style="margin-bottom: 1.5rem;">Usuários Cadastrados</h2>
+            <div class="user-list" id="users-list">
+                <div class="loading">Carregando...</div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="admin-section" id="stats-section">
+            <h2 style="margin-bottom: 1.5rem;">Estatísticas</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-users">-</div>
+                    <div class="stat-label">Usuários</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-global-docs">-</div>
+                    <div class="stat-label">Docs Globais</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-total-docs">-</div>
+                    <div class="stat-label">Total Documentos</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Document Modal -->
+    <div class="modal" id="doc-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Novo Documento Global</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <form id="doc-form">
+                <input type="hidden" id="doc-id">
+                <div class="form-group">
+                    <label for="doc-title">Título</label>
+                    <input type="text" id="doc-title" required placeholder="Ex: Estratégias de Engajamento">
+                </div>
+                <div class="form-group">
+                    <label for="doc-category">Categoria</label>
+                    <select id="doc-category" required>
+                        <option value="strategy">🎯 Estratégia de Marketing</option>
+                        <option value="briefing">📋 Briefing de Campanha</option>
+                        <option value="voice">🎤 Tom de Voz</option>
+                        <option value="campaign">📢 Campanha Ativa</option>
+                        <option value="release">🎵 Lançamento</option>
+                        <option value="audience">👥 Público-Alvo</option>
+                        <option value="hashtags">#️⃣ Hashtags e Keywords</option>
+                        <option value="other">📝 Outro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="doc-content">Conteúdo</label>
+                    <textarea id="doc-content" rows="10" required
+                        placeholder="Digite o conteúdo do documento..."></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" id="modal-cancel">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="modal-submit">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="supabase.js"></script>
+    <script src="auth.js"></script>
+    <script src="data-service.js"></script>
+    <script>
+        // =====================================================
+        // Admin Panel Logic
+        // =====================================================
+
+        let globalDocuments = [];
+        let users = [];
+
+        // =====================================================
+        // Initialization
+        // =====================================================
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize auth
+            await authManager.initialize();
+
+            // Check if user is admin
+            if (!authManager.isAuthenticated()) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            if (!authManager.isUserAdmin()) {
+                alert('Acesso negado. Apenas administradores podem acessar esta área.');
+                window.location.href = '/';
+                return;
+            }
+
+            // Show user email
+            document.getElementById('admin-user-email').textContent = authManager.getUserEmail();
+
+            // Initialize data service
+            await dataService.initialize();
+
+            // Load data
+            loadGlobalDocuments();
+
+            // Setup event listeners
+            setupEventListeners();
+        });
+
+        // =====================================================
+        // Event Listeners
+        // =====================================================
+
+        function setupEventListeners() {
+            // Tabs
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchTab(tab.dataset.tab);
+                });
+            });
+
+            // Logout
+            document.getElementById('logout-btn').addEventListener('click', async () => {
+                await authManager.signOut();
+                window.location.href = '/login.html';
+            });
+
+            // Add document button
+            document.getElementById('add-global-doc-btn').addEventListener('click', () => {
+                openDocModal();
+            });
+
+            // Modal close buttons
+            document.getElementById('modal-close').addEventListener('click', closeDocModal);
+            document.getElementById('modal-cancel').addEventListener('click', closeDocModal);
+
+            // Document form submit
+            document.getElementById('doc-form').addEventListener('submit', handleDocFormSubmit);
+
+            // Click outside modal to close
+            document.getElementById('doc-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'doc-modal') {
+                    closeDocModal();
+                }
+            });
+        }
+
+        // =====================================================
+        // Tab Switching
+        // =====================================================
+
+        function switchTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update sections
+            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`${tabName}-section`).classList.add('active');
+
+            // Load data for tab
+            if (tabName === 'users') {
+                loadUsers();
+            } else if (tabName === 'stats') {
+                loadStats();
+            }
+        }
+
+        // =====================================================
+        // Global Documents
+        // =====================================================
+
+        async function loadGlobalDocuments() {
+            const container = document.getElementById('global-docs-list');
+            container.innerHTML = '<div class="loading">Carregando...</div>';
+
+            try {
+                globalDocuments = await dataService.getGlobalDocuments();
+                renderGlobalDocuments();
+            } catch (error) {
+                console.error('Error loading global documents:', error);
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div>Erro ao carregar documentos</div>';
+            }
+        }
+
+        function renderGlobalDocuments() {
+            const container = document.getElementById('global-docs-list');
+
+            if (globalDocuments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <p>Nenhum documento global criado</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Crie documentos que serão visíveis para todos os usuários.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const categories = {
+                strategy: { name: 'Estratégia', icon: '🎯' },
+                briefing: { name: 'Briefing', icon: '📋' },
+                voice: { name: 'Tom de Voz', icon: '🎤' },
+                campaign: { name: 'Campanha', icon: '📢' },
+                release: { name: 'Lançamento', icon: '🎵' },
+                audience: { name: 'Público-Alvo', icon: '👥' },
+                hashtags: { name: 'Hashtags', icon: '#️⃣' },
+                other: { name: 'Outro', icon: '📝' }
+            };
+
+            container.innerHTML = globalDocuments.map(doc => {
+                const cat = categories[doc.category] || categories.other;
+                return `
+                    <div class="document-card global">
+                        <div class="document-header">
+                            <div class="document-title">${escapeHtml(doc.title)}</div>
+                            <span class="document-category">${cat.icon} ${cat.name}</span>
+                        </div>
+                        <div class="document-content">${escapeHtml(doc.content)}</div>
+                        <div class="document-actions">
+                            <button class="btn-secondary" onclick="editDocument('${doc.id}')">✏️ Editar</button>
+                            <button class="btn-danger" onclick="deleteDocument('${doc.id}')">🗑️ Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // =====================================================
+        // Document Modal
+        // =====================================================
+
+        function openDocModal(docId = null) {
+            const modal = document.getElementById('doc-modal');
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('doc-form');
+
+            if (docId) {
+                const doc = globalDocuments.find(d => d.id === docId);
+                if (doc) {
+                    title.textContent = 'Editar Documento';
+                    document.getElementById('doc-id').value = doc.id;
+                    document.getElementById('doc-title').value = doc.title;
+                    document.getElementById('doc-category').value = doc.category;
+                    document.getElementById('doc-content').value = doc.content;
+                }
+            } else {
+                title.textContent = 'Novo Documento Global';
+                form.reset();
+                document.getElementById('doc-id').value = '';
+            }
+
+            modal.classList.add('show');
+        }
+
+        function closeDocModal() {
+            document.getElementById('doc-modal').classList.remove('show');
+        }
+
+        async function handleDocFormSubmit(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('doc-id').value;
+            const title = document.getElementById('doc-title').value;
+            const category = document.getElementById('doc-category').value;
+            const content = document.getElementById('doc-content').value;
+            const submitBtn = document.getElementById('modal-submit');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Salvando...';
+
+            try {
+                if (id) {
+                    await dataService.updateGlobalDocument(id, title, category, content);
+                    showNotification('Documento atualizado com sucesso!', 'success');
+                } else {
+                    await dataService.addGlobalDocument(title, category, content);
+                    showNotification('Documento criado com sucesso!', 'success');
+                }
+
+                closeDocModal();
+                loadGlobalDocuments();
+            } catch (error) {
+                console.error('Error saving document:', error);
+                showNotification('Erro ao salvar documento', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Salvar';
+            }
+        }
+
+        function editDocument(id) {
+            openDocModal(id);
+        }
+
+        async function deleteDocument(id) {
+            if (!confirm('Tem certeza que deseja excluir este documento?')) {
+                return;
+            }
+
+            try {
+                await dataService.deleteGlobalDocument(id);
+                showNotification('Documento excluído com sucesso!', 'success');
+                loadGlobalDocuments();
+            } catch (error) {
+                console.error('Error deleting document:', error);
+                showNotification('Erro ao excluir documento', 'error');
+            }
+        }
+
+        // =====================================================
+        // Users
+        // =====================================================
+
+        async function loadUsers() {
+            const container = document.getElementById('users-list');
+            container.innerHTML = '<div class="loading">Carregando...</div>';
+
+            try {
+                users = await dataService.getUsers();
+                renderUsers();
+            } catch (error) {
+                console.error('Error loading users:', error);
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div>Erro ao carregar usuários</div>';
+            }
+        }
+
+        function renderUsers() {
+            const container = document.getElementById('users-list');
+
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👥</div>
+                        <p>Nenhum usuário cadastrado</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = users.map(user => {
+                const initial = (user.display_name || user.email || '?')[0].toUpperCase();
+                const roleClass = user.role === 'admin' ? 'admin' : 'user';
+                const roleLabel = user.role === 'admin' ? 'Admin' : 'Usuário';
+
+                return `
+                    <div class="user-card">
+                        <div class="user-info">
+                            <div class="user-avatar">${initial}</div>
+                            <div>
+                                <div class="user-email">${escapeHtml(user.email)}</div>
+                                <div style="color: var(--text-tertiary); font-size: 0.85rem;">
+                                    ${user.display_name || 'Sem nome'} • Desde ${formatDate(user.created_at)}
+                                </div>
+                            </div>
+                        </div>
+                        <span class="user-role ${roleClass}">${roleLabel}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // =====================================================
+        // Stats
+        // =====================================================
+
+        async function loadStats() {
+            try {
+                // Load users if not already loaded
+                if (users.length === 0) {
+                    users = await dataService.getUsers();
+                }
+
+                // Load global docs if not already loaded
+                if (globalDocuments.length === 0) {
+                    globalDocuments = await dataService.getGlobalDocuments();
+                }
+
+                document.getElementById('stat-users').textContent = users.length;
+                document.getElementById('stat-global-docs').textContent = globalDocuments.length;
+                document.getElementById('stat-total-docs').textContent = globalDocuments.length; // TODO: count all docs
+
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // =====================================================
+        // Utilities
+        // =====================================================
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

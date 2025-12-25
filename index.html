@@ -25,6 +25,9 @@
     <!-- PDF.js for PDF text extraction -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Register Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
@@ -47,6 +50,12 @@
                     <h1>THAMI</h1>
                     <span class="subtitle">Marketing Assistant</span>
                 </div>
+            </div>
+            <!-- User Info -->
+            <div class="user-info" id="user-info" style="display: none;">
+                <span class="user-email" id="header-user-email"></span>
+                <a href="/admin.html" class="admin-link" id="admin-link" style="display: none;">🔧 Admin</a>
+                <button class="logout-btn" id="header-logout-btn" title="Sair">🚪</button>
             </div>
             <nav class="header-nav">
                 <button class="nav-btn" data-view="dashboard" aria-label="Dashboard">
@@ -331,6 +340,9 @@
 
     <!-- Scripts -->
     <script src="error-trap.js"></script>
+    <script src="supabase.js"></script>
+    <script src="auth.js"></script>
+    <script src="data-service.js"></script>
     <script src="thami-profile.js"></script>
     <script src="ai-generator.js"></script>
     <script src="knowledge-base.js"></script>
