@@ -38,6 +38,28 @@
             });
         }
     </script>
+
+    <!-- Auth Check - Redirect to login if not authenticated -->
+    <script src="supabase.js"></script>
+    <script>
+        (async function checkAuth() {
+            // Wait for Supabase to be ready
+            if (typeof supabase === 'undefined' || !isSupabaseConfigured()) {
+                console.log('Supabase not configured, skipping auth check');
+                return;
+            }
+
+            const sb = getSupabase();
+            if (!sb) return;
+
+            const { data: { session } } = await sb.auth.getSession();
+
+            if (!session) {
+                // Not authenticated - redirect to login
+                window.location.href = '/login.html';
+            }
+        })();
+    </script>
 </head>
 
 <body>
