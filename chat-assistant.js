@@ -110,7 +110,7 @@ class ChatAssistant {
         let context = '';
 
         if (this.memory.learnedFacts.length > 0) {
-            context += '\n\n# FATOS APRENDIDOS SOBRE A THAMI\n';
+            context += '\n\n# FATOS APRENDIDOS SOBRE O ARTISTA\n';
             context += this.memory.learnedFacts.slice(0, 15).map(f => `- ${f}`).join('\n');
         }
 
@@ -195,7 +195,7 @@ class ChatAssistant {
         };
 
         return `# IDENTIDADE
-Você é um ESTRATEGISTA DE MARKETING DIGITAL especializado na indústria musical brasileira. Seu nome é "THAMI Assistant".
+Você é um ESTRATEGISTA DE MARKETING DIGITAL especializado na indústria musical brasileira.
 
 # REGRAS FUNDAMENTAIS (SIGA RIGOROSAMENTE!)
 
@@ -422,11 +422,11 @@ Responda SEMPRE em Português do Brasil, usando linguagem natural e contemporân
             memoryInfo = `\n\n🧠 **Memória ativa:** ${stats.insights} insight${stats.insights !== 1 ? 's' : ''}, ${stats.facts} fato${stats.facts !== 1 ? 's' : ''} aprendido${stats.facts !== 1 ? 's' : ''}`;
         }
 
-        return `👋 **Olá! Sou o estrategista de marketing da THAMI.**
+        return `👋 **Olá! Sou seu estrategista de marketing musical.**
 
 ${emoji} **Plataforma:** ${platform.charAt(0).toUpperCase() + platform.slice(1)}${memoryInfo}
 
-Me conta o que você quer criar! Quanto mais você usar, mais eu aprendo sobre a THAMI.`;
+Me conta o que você quer criar! Quanto mais você usar, mais eu aprendo sobre você.`;
     }
 }
 
