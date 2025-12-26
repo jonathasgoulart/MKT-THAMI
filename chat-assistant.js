@@ -47,23 +47,110 @@ class ChatAssistant {
     }
 
     // ===================================
-    // Permanent Memory (localStorage)
+    // Permanent Memory (Supabase + localStorage fallback)
     // ===================================
+
+    // Memory limits (increased from 50/30)
+    static MAX_INSIGHTS = 100;
+    static MAX_FACTS = 100;
 
     loadMemory() {
         try {
-            return JSON.parse(localStorage.getItem('chat_memory')) || {
+            // Load from localStorage first (fast)
+            const localMemory = JSON.parse(localStorage.getItem('chat_memory')) || {
                 insights: [],
                 preferences: {},
                 learnedFacts: []
             };
+
+            // Then try to sync from Supabase in background
+            this.syncMemoryFromSupabase();
+
+            return localMemory;
         } catch {
             return { insights: [], preferences: {}, learnedFacts: [] };
         }
     }
 
+    async syncMemoryFromSupabase() {
+        try {
+            const supabase = getSupabase();
+            if (!supabase || !authManager?.currentUser?.id) return;
+
+            const { data, error } = await supabase
+                .from('chat_memory')
+                .select('*')
+                .eq('user_id', authManager.currentUser.id)
+                .single();
+
+            if (error && error.code !== 'PGRST116') {
+                console.log('[Memory] Error loading from Supabase:', error.message);
+                return;
+            }
+
+            if (data) {
+                // Merge Supabase data with local data
+                const supabaseMemory = {
+                    insights: data.insights || [],
+                    learnedFacts: data.learned_facts || [],
+                    preferences: data.preferences || {}
+                };
+
+                // Use whichever has more data (in case of conflicts)
+                if (supabaseMemory.insights.length > this.memory.insights.length ||
+                    supabaseMemory.learnedFacts.length > this.memory.learnedFacts.length) {
+                    this.memory = supabaseMemory;
+                    localStorage.setItem('chat_memory', JSON.stringify(this.memory));
+                    console.log('[Memory] Synced from Supabase:', this.getMemoryStats());
+                }
+            }
+        } catch (error) {
+            console.log('[Memory] Supabase sync error:', error.message);
+        }
+    }
+
     saveMemory() {
+        // Save to localStorage immediately
         localStorage.setItem('chat_memory', JSON.stringify(this.memory));
+
+        // Save to Supabase in background (debounced)
+        this.debouncedSaveToSupabase();
+    }
+
+    debouncedSaveToSupabase() {
+        // Clear previous timeout
+        if (this.saveTimeout) clearTimeout(this.saveTimeout);
+
+        // Save after 2 seconds of no changes
+        this.saveTimeout = setTimeout(() => {
+            this.saveMemoryToSupabase();
+        }, 2000);
+    }
+
+    async saveMemoryToSupabase() {
+        try {
+            const supabase = getSupabase();
+            if (!supabase || !authManager?.currentUser?.id) return;
+
+            const memoryData = {
+                user_id: authManager.currentUser.id,
+                insights: this.memory.insights,
+                learned_facts: this.memory.learnedFacts,
+                preferences: this.memory.preferences
+            };
+
+            const { error } = await supabase
+                .from('chat_memory')
+                .upsert(memoryData, { onConflict: 'user_id' });
+
+            if (error) {
+                console.log('[Memory] Error saving to Supabase:', error.message);
+            } else {
+                console.log('[Memory] Saved to Supabase');
+            }
+        } catch (error) {
+            console.log('[Memory] Supabase save error:', error.message);
+        }
     }
 
     addInsight(category, content) {
@@ -81,9 +168,9 @@ class ChatAssistant {
 
         if (!isDuplicate) {
             this.memory.insights.unshift(insight);
-            // Keep max 50 insights
-            if (this.memory.insights.length > 50) {
-                this.memory.insights = this.memory.insights.slice(0, 50);
+            // Keep max insights (increased to 100)
+            if (this.memory.insights.length > ChatAssistant.MAX_INSIGHTS) {
+                this.memory.insights = this.memory.insights.slice(0, ChatAssistant.MAX_INSIGHTS);
             }
             this.saveMemory();
             return true;
@@ -94,8 +181,9 @@ class ChatAssistant {
     addLearnedFact(fact) {
         if (!this.memory.learnedFacts.includes(fact)) {
             this.memory.learnedFacts.unshift(fact);
-            if (this.memory.learnedFacts.length > 30) {
-                this.memory.learnedFacts = this.memory.learnedFacts.slice(0, 30);
+            // Keep max facts (increased to 100)
+            if (this.memory.learnedFacts.length > ChatAssistant.MAX_FACTS) {
+                this.memory.learnedFacts = this.memory.learnedFacts.slice(0, ChatAssistant.MAX_FACTS);
             }
             this.saveMemory();
         }
@@ -111,12 +199,12 @@ class ChatAssistant {
 
         if (this.memory.learnedFacts.length > 0) {
             context += '\n\n# FATOS APRENDIDOS SOBRE O ARTISTA\n';
-            context += this.memory.learnedFacts.slice(0, 15).map(f => `- ${f}`).join('\n');
+            context += this.memory.learnedFacts.slice(0, 20).map(f => `- ${f}`).join('\n');
         }
 
         if (this.memory.insights.length > 0) {
             context += '\n\n# INSIGHTS DE CONVERSAS ANTERIORES\n';
-            const recentInsights = this.memory.insights.slice(0, 10);
+            const recentInsights = this.memory.insights.slice(0, 15);
             context += recentInsights.map(i => `- [${i.category}] ${i.content}`).join('\n');
         }
 
@@ -154,9 +242,22 @@ class ChatAssistant {
         }
     }
 
-    clearMemory() {
+    async clearMemory() {
         this.memory = { insights: [], preferences: {}, learnedFacts: [] };
-        this.saveMemory();
+        localStorage.setItem('chat_memory', JSON.stringify(this.memory));
+
+        // Also clear from Supabase
+        try {
+            const supabase = getSupabase();
+            if (supabase && authManager?.currentUser?.id) {
+                await supabase
+                    .from('chat_memory')
+                    .delete()
+                    .eq('user_id', authManager.currentUser.id);
+            }
+        } catch (error) {
+            console.log('[Memory] Error clearing from Supabase:', error.message);
+        }
     }
 
     getMemoryStats() {

@@ -98,9 +98,6 @@
                     <span class="icon">📋</span>
                     <span class="label">Briefings</span>
                 </button>
-                <button class="nav-btn settings-btn" data-view="settings" aria-label="Settings">
-                    <span class="icon">⚙️</span>
-                </button>
             </nav>
             <!-- User Info -->
             <div class="user-info" id="user-info" style="display: none;">
@@ -204,7 +201,8 @@
                 <div class="knowledge-header">
                     <div>
                         <h2 class="section-title">📋 Briefings</h2>
-                        <p class="section-description">Documentos e informações que a IA usa para criar conteúdo</p>
+                        <p class="section-description">Cadastre briefings, estratégias e informações da sua carreira.
+                            Quanto mais detalhes, mais personalizado será o conteúdo gerado.</p>
                     </div>
                     <button class="btn-primary" id="add-knowledge-btn">
                         <span>+</span> Adicionar Briefing
@@ -217,8 +215,8 @@
                         <h3 id="knowledge-form-title">Novo Documento</h3>
                         <div class="form-group">
                             <label for="knowledge-title">Título</label>
-                            <input type="text" id="knowledge-title"
-                                placeholder="Ex: Estratégia de Lançamento Q1 2025" />
+                            <input type="text" id="knowledge-title" placeholder="Ex: Estratégia de Lançamento Q1 2025"
+                                autocomplete="off" />
                         </div>
                         <div class="form-group">
                             <label for="knowledge-category">Categoria</label>
@@ -258,7 +256,8 @@
 
                 <!-- Search and Filter -->
                 <div class="knowledge-controls">
-                    <input type="search" id="knowledge-search" placeholder="Buscar documentos..." />
+                    <input type="search" id="knowledge-search" placeholder="Buscar documentos..." autocomplete="off"
+                        autocorrect="off" autocapitalize="off" spellcheck="false" />
                     <select id="knowledge-filter">
                         <option value="all">Todas as Categorias</option>
                         <option value="strategy">🎯 Estratégia</option>
@@ -285,85 +284,6 @@
                         <p>Nenhuma estratégia cadastrada ainda</p>
                         <p class="empty-hint">Adicione briefings, estratégias e conteúdos para alimentar a IA</p>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Settings View -->
-        <section id="settings-view" class="view-section">
-            <div class="settings-container">
-                <h2 class="section-title">Configurações</h2>
-
-                <div class="settings-card">
-                    <h3>🤖 Provedor de IA</h3>
-                    <p class="settings-description">Escolha qual serviço de IA usar para gerar conteúdo.</p>
-
-                    <div class="form-group">
-                        <label for="ai-provider-select">Provedor Ativo</label>
-                        <select id="ai-provider-select" style="padding: 12px; font-size: 1rem;">
-                            <option value="groq">🚀 Groq (Llama 3.3 - Gratuito e Rápido)</option>
-                            <option value="gemini">✨ Google Gemini</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group"
-                        style="flex-direction: row; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-top: 15px;">
-                        <input type="checkbox" id="manual-mode-toggle"
-                            style="width: 20px; height: 20px; cursor: pointer;" />
-                        <label for="manual-mode-toggle" style="margin: 0; cursor: pointer; font-weight: 500;">
-                            Ativar Modo Manual (Sem IA)
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Groq API Key -->
-                <div class="settings-card" id="groq-settings">
-                    <h3>🚀 API Key do Groq</h3>
-                    <p class="settings-description">Configure sua chave de API do Groq para usar IA gratuita e
-                        ultra-rápida.</p>
-                    <div class="form-group">
-                        <input type="password" id="groq-api-key-input"
-                            placeholder="Cole sua Groq API key aqui (gsk_...)" />
-                        <div style="display: flex; gap: 10px; width: 100%;">
-                            <button class="btn-primary" id="save-groq-key-btn" style="flex: 2;">Salvar API Key</button>
-                            <button class="btn-secondary" id="test-groq-btn" style="flex: 1;">Testar Conexão</button>
-                        </div>
-                    </div>
-                    <p class="settings-hint">
-                        <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Obter API Key GRATUITA no
-                            Groq →</a>
-                    </p>
-                    <div id="groq-status" class="status-message"></div>
-                </div>
-
-                <!-- Gemini API Key (backup) -->
-                <div class="settings-card" id="gemini-settings" style="opacity: 0.7;">
-                    <h3>✨ API Key do Gemini (Backup)</h3>
-                    <p class="settings-description">Configure sua chave do Google Gemini como opção alternativa.</p>
-                    <div class="form-group">
-                        <input type="password" id="api-key-input" placeholder="Cole sua API key aqui..." />
-                        <div style="display: flex; gap: 10px; width: 100%;">
-                            <button class="btn-primary" id="save-api-key-btn" style="flex: 2;">Salvar API Key</button>
-                            <button class="btn-secondary" id="test-connection-btn" style="flex: 1;">Testar
-                                Conexão</button>
-                        </div>
-                    </div>
-                    <p class="settings-hint">
-                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Obter API Key no
-                            AI Studio →</a>
-                    </p>
-                    <div id="api-key-status" class="status-message"></div>
-                </div>
-
-                <div class="settings-card">
-                    <h3>💾 Dados</h3>
-                    <p class="settings-description">Gerencie seus dados locais</p>
-                    <div class="settings-actions">
-                        <button class="btn-secondary" id="export-data-btn">Exportar Dados</button>
-                        <button class="btn-secondary" id="import-data-btn">Importar Dados</button>
-                        <button class="btn-danger" id="clear-data-btn">Limpar Todos os Dados</button>
-                    </div>
-                    <input type="file" id="import-file-input" accept=".json" style="display: none;" />
                 </div>
             </div>
         </section>
