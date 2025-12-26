@@ -63,6 +63,18 @@
 </head>
 
 <body>
+    <!-- iOS Install Banner -->
+    <div class="ios-install-banner" id="ios-install-banner" style="display: none;">
+        <div class="ios-install-content">
+            <span class="ios-install-icon">📲</span>
+            <div class="ios-install-text">
+                <strong>Instale o App!</strong>
+                <span>Toque em <span class="share-icon">⬆️</span> e selecione "Adicionar à Tela de Início"</span>
+            </div>
+            <button class="ios-install-close" id="ios-install-close" aria-label="Fechar">✕</button>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="app-header">
         <div class="header-content">
@@ -371,6 +383,44 @@
     <script src="chat-assistant.js"></script>
     <script src="content-manager.js"></script>
     <script src="app.js"></script>
+
+    <!-- iOS Install Banner Script -->
+    <script>
+        (function () {
+            // Check if iOS Safari and not in standalone mode (not installed)
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isInStandalone = window.navigator.standalone === true;
+            const isSafari = /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS|EdgiOS/.test(navigator.userAgent);
+            const dismissed = localStorage.getItem('ios-install-dismissed');
+
+            // Show banner if: iOS + Safari + not installed + not dismissed recently
+            if (isIOS && isSafari && !isInStandalone && !dismissed) {
+                const banner = document.getElementById('ios-install-banner');
+                const closeBtn = document.getElementById('ios-install-close');
+
+                if (banner && closeBtn) {
+                    // Show banner after a short delay
+                    setTimeout(() => {
+                        banner.style.display = 'block';
+                    }, 2000);
+
+                    // Handle close button
+                    closeBtn.addEventListener('click', () => {
+                        banner.style.display = 'none';
+                        // Remember dismissal for 7 days
+                        const expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+                        localStorage.setItem('ios-install-dismissed', expiry.toString());
+                    });
+                }
+            }
+
+            // Clean up expired dismissal
+            const dismissedTime = parseInt(localStorage.getItem('ios-install-dismissed') || '0');
+            if (dismissedTime && Date.now() > dismissedTime) {
+                localStorage.removeItem('ios-install-dismissed');
+            }
+        })();
+    </script>
 </body>
 
 </html>
