@@ -1073,3 +1073,204 @@ const additionalStyles = `
 
 // Inject additional styles
 document.head.insertAdjacentHTML('beforeend', additionalStyles);
+
+// ===================================
+// Multi-Artist Management
+// ===================================
+
+function setupArtistSelector() {
+    const dropdownBtn = document.getElementById('artist-dropdown-btn');
+    const dropdownWrapper = document.querySelector('.artist-dropdown-wrapper');
+    const artistSelector = document.getElementById('artist-selector');
+    const addArtistBtn = document.getElementById('add-artist-btn');
+    const addArtistModal = document.getElementById('add-artist-modal');
+    const cancelAddArtist = document.getElementById('cancel-add-artist');
+    const confirmAddArtist = document.getElementById('confirm-add-artist');
+
+    if (!dropdownBtn || !artistSelector) return;
+
+    // Show artist selector if logged in
+    if (typeof authManager !== 'undefined' && authManager.isAuthenticated()) {
+        artistSelector.style.display = 'block';
+        loadArtists();
+    }
+
+    // Toggle dropdown
+    dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownWrapper.classList.toggle('open');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+        dropdownWrapper?.classList.remove('open');
+    });
+
+    // Add artist button
+    if (addArtistBtn) {
+        addArtistBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownWrapper.classList.remove('open');
+            showAddArtistModal();
+        });
+    }
+
+    // Cancel add artist
+    if (cancelAddArtist) {
+        cancelAddArtist.addEventListener('click', hideAddArtistModal);
+    }
+
+    // Confirm add artist
+    if (confirmAddArtist) {
+        confirmAddArtist.addEventListener('click', createArtist);
+    }
+
+    // Close modal on overlay click
+    if (addArtistModal) {
+        addArtistModal.addEventListener('click', (e) => {
+            if (e.target === addArtistModal) {
+                hideAddArtistModal();
+            }
+        });
+    }
+}
+
+async function loadArtists() {
+    const artistList = document.getElementById('artist-list');
+    const currentArtistName = document.getElementById('current-artist-name');
+
+    if (!artistList) return;
+
+    try {
+        const artists = await dataService.getArtists();
+
+        if (artists.length === 0) {
+            artistList.innerHTML = '<p style="padding: 8px 16px; color: var(--text-tertiary);">Nenhum artista</p>';
+            currentArtistName.textContent = 'Adicionar Artista';
+            return;
+        }
+
+        artistList.innerHTML = artists.map(artist => `
+            <button class="artist-item ${artist.isActive ? 'active' : ''}" 
+                    data-artist-id="${artist.id}"
+                    onclick="switchArtist('${artist.id}')">
+                <span class="artist-item-name">${artist.name}</span>
+                <span class="artist-item-genre">${artist.genre || ''}</span>
+                ${artist.isActive ? '<span class="artist-item-check">✓</span>' : ''}
+            </button>
+        `).join('');
+
+        // Update current artist name in dropdown button
+        const activeArtist = artists.find(a => a.isActive);
+        if (activeArtist) {
+            currentArtistName.textContent = activeArtist.name;
+            // Store active artist ID in dataService
+            dataService.activeArtistId = activeArtist.id;
+        }
+    } catch (error) {
+        console.error('Error loading artists:', error);
+        artistList.innerHTML = '<p style="padding: 8px 16px; color: var(--text-tertiary);">Erro ao carregar</p>';
+    }
+}
+
+async function switchArtist(artistId) {
+    try {
+        await dataService.setActiveArtist(artistId);
+
+        // Close dropdown
+        document.querySelector('.artist-dropdown-wrapper')?.classList.remove('open');
+
+        // Reload artists list
+        await loadArtists();
+
+        // Reload profile if on profile view
+        if (currentView === 'profile') {
+            const profile = await dataService.getArtistProfile(artistId);
+            if (profile) {
+                profileManager.profile = profile;
+                profileManager.renderProfileEditor(currentProfileTab);
+            }
+        }
+
+        // Reload knowledge base
+        if (typeof knowledgeBase !== 'undefined') {
+            await knowledgeBase.loadDocuments();
+            if (currentView === 'knowledge') {
+                renderKnowledgeList();
+            }
+        }
+
+        // Clear chat for new artist context
+        chatAssistant.clearMessages();
+        renderChatMessages();
+
+        showToast('Artista alterado!', 'success');
+    } catch (error) {
+        console.error('Error switching artist:', error);
+        showToast('Erro ao trocar artista', 'error');
+    }
+}
+
+function showAddArtistModal() {
+    const modal = document.getElementById('add-artist-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('new-artist-name')?.focus();
+    }
+}
+
+function hideAddArtistModal() {
+    const modal = document.getElementById('add-artist-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.getElementById('new-artist-name').value = '';
+        document.getElementById('new-artist-genre').value = '';
+    }
+}
+
+async function createArtist() {
+    const nameInput = document.getElementById('new-artist-name');
+    const genreInput = document.getElementById('new-artist-genre');
+
+    const name = nameInput?.value.trim();
+    const genre = genreInput?.value.trim();
+
+    if (!name) {
+        showToast('Por favor, informe o nome do artista', 'error');
+        return;
+    }
+
+    try {
+        await dataService.createArtist(name, genre);
+        hideAddArtistModal();
+        await loadArtists();
+        showToast(`Artista "${name}" criado!`, 'success');
+    } catch (error) {
+        console.error('Error creating artist:', error);
+        showToast(error.message || 'Erro ao criar artista', 'error');
+    }
+}
+
+// Initialize artist selector after auth is ready
+const originalUpdateAuthUI = updateAuthUI;
+updateAuthUI = function () {
+    originalUpdateAuthUI();
+
+    // Also show/hide and load artist selector
+    const artistSelector = document.getElementById('artist-selector');
+    if (artistSelector) {
+        if (typeof authManager !== 'undefined' && authManager.isAuthenticated()) {
+            artistSelector.style.display = 'block';
+            loadArtists();
+        } else {
+            artistSelector.style.display = 'none';
+        }
+    }
+};
+
+// Setup artist selector on app init
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait a bit for auth to initialize
+    setTimeout(setupArtistSelector, 500);
+});
+

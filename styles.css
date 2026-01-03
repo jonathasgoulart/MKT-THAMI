@@ -1907,3 +1907,232 @@ a:hover {
 .ios-install-close:hover {
     background: rgba(255, 255, 255, 0.3);
 }
+
+/* ===================================
+   Artist Selector Dropdown
+   =================================== */
+
+.artist-selector {
+    position: relative;
+    margin-left: var(--spacing-sm);
+}
+
+.artist-dropdown-wrapper {
+    position: relative;
+}
+
+.artist-dropdown-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    min-width: 160px;
+}
+
+.artist-dropdown-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--primary-color);
+}
+
+.artist-dropdown-btn .artist-icon {
+    font-size: 1.1rem;
+}
+
+.artist-dropdown-btn .artist-name {
+    flex: 1;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;
+}
+
+.artist-dropdown-btn .dropdown-arrow {
+    font-size: 0.7rem;
+    color: var(--text-tertiary);
+    transition: transform var(--transition-fast);
+}
+
+.artist-dropdown-wrapper.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.artist-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    display: none;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.artist-dropdown-wrapper.open .artist-dropdown-menu {
+    display: block;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.artist-list {
+    padding: var(--spacing-xs) 0;
+}
+
+.artist-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.artist-item:hover {
+    background: var(--bg-secondary);
+}
+
+.artist-item.active {
+    background: rgba(16, 163, 127, 0.1);
+    color: var(--primary-color);
+}
+
+.artist-item .artist-item-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.artist-item .artist-item-genre {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.artist-item .artist-item-check {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.dropdown-divider {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: var(--spacing-xs) 0;
+}
+
+.add-artist-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.add-artist-btn:hover {
+    background: var(--bg-secondary);
+}
+
+/* ===================================
+   Modal Overlay
+   =================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h3 {
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-primary);
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: flex-end;
+    margin-top: var(--spacing-lg);
+}
+
+/* Mobile adjustments for artist selector */
+@media (max-width: 768px) {
+    .artist-dropdown-btn {
+        min-width: 120px;
+        padding: var(--spacing-xs);
+    }
+
+    .artist-dropdown-btn .artist-name {
+        max-width: 80px;
+    }
+
+    .artist-selector {
+        margin-left: 0;
+    }
+}

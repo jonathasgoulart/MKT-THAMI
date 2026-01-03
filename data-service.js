@@ -26,7 +26,10 @@ class DataService {
     // Artist Profile Operations
     // =====================================================
 
-    async getArtistProfile() {
+    // Stores the current active artist ID
+    activeArtistId = null;
+
+    async getArtistProfile(artistId = null) {
         if (!this.isConnected()) {
             return this.getLocalProfile();
         }
@@ -34,10 +37,46 @@ class DataService {
         const supabase = getSupabase();
         const userId = authManager.getUserId();
 
+        // If artistId provided, use it; otherwise get active artist
+        let targetArtistId = artistId || this.activeArtistId;
+
+        if (!targetArtistId) {
+            // Get active artist
+            const { data: activeArtist } = await supabase
+                .from('artist_profiles')
+                .select('id')
+                .eq('user_id', userId)
+                .eq('is_active', true)
+                .single();
+
+            targetArtistId = activeArtist?.id;
+
+            // If still no active, get the first one
+            if (!targetArtistId) {
+                const { data: firstArtist } = await supabase
+                    .from('artist_profiles')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: true })
+                    .limit(1)
+                    .single();
+
+                targetArtistId = firstArtist?.id;
+            }
+        }
+
+        if (!targetArtistId) {
+            console.error('No artist found for user');
+            return this.getLocalProfile();
+        }
+
+        // Store for future use
+        this.activeArtistId = targetArtistId;
+
         const { data, error } = await supabase
             .from('artist_profiles')
             .select('*')
-            .eq('user_id', userId)
+            .eq('id', targetArtistId)
             .single();
 
         if (error) {
@@ -45,36 +84,59 @@ class DataService {
             return this.getLocalProfile();
         }
 
-        return this.transformProfileFromDB(data);
+        // Also return the artist ID for reference
+        const profile = this.transformProfileFromDB(data);
+        profile._artistId = data.id;
+        return profile;
     }
 
-    async saveArtistProfile(profile) {
+    async saveArtistProfile(profile, artistId = null) {
         if (!this.isConnected()) {
             return this.saveLocalProfile(profile);
         }
 
         const supabase = getSupabase();
         const userId = authManager.getUserId();
+        const targetArtistId = artistId || this.activeArtistId || profile._artistId;
 
         const dbProfile = this.transformProfileToDB(profile);
 
-        const { data, error } = await supabase
-            .from('artist_profiles')
-            .upsert({
-                user_id: userId,
-                ...dbProfile
-            }, {
-                onConflict: 'user_id'
-            })
-            .select()
-            .single();
+        if (targetArtistId) {
+            // Update existing artist
+            const { data, error } = await supabase
+                .from('artist_profiles')
+                .update(dbProfile)
+                .eq('id', targetArtistId)
+                .eq('user_id', userId)
+                .select()
+                .single();
 
-        if (error) {
-            console.error('Error saving artist profile:', error);
-            throw error;
+            if (error) {
+                console.error('Error saving artist profile:', error);
+                throw error;
+            }
+
+            return this.transformProfileFromDB(data);
+        } else {
+            // Fallback: create new artist (shouldn't happen normally)
+            const { data, error } = await supabase
+                .from('artist_profiles')
+                .insert({
+                    user_id: userId,
+                    ...dbProfile,
+                    is_active: true
+                })
+                .select()
+                .single();
+
+            if (error) {
+                console.error('Error creating artist profile:', error);
+                throw error;
+            }
+
+            this.activeArtistId = data.id;
+            return this.transformProfileFromDB(data);
         }
-
-        return this.transformProfileFromDB(data);
     }
 
     // Transform profile from database format
@@ -99,6 +161,274 @@ class DataService {
             releases: profile.releases || [],
             social: profile.social || {}
         };
+    }
+
+    // =====================================================
+    // Multi-Artist Management
+    // =====================================================
+
+    // Get all artists for the current user
+    async getArtists() {
+        if (!this.isConnected()) {
+            return this.getLocalArtists();
+        }
+
+        const supabase = getSupabase();
+        const userId = authManager.getUserId();
+
+        const { data, error } = await supabase
+            .from('artist_profiles')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error('Error fetching artists:', error);
+            return this.getLocalArtists();
+        }
+
+        return data.map(artist => ({
+            id: artist.id,
+            name: artist.bio?.name || 'Artista sem nome',
+            genre: artist.bio?.genre || '',
+            isActive: artist.is_active || false,
+            bio: artist.bio,
+            achievements: artist.achievements,
+            events: artist.events,
+            releases: artist.releases,
+            social: artist.social,
+            createdAt: artist.created_at
+        }));
+    }
+
+    // Get the active artist
+    async getActiveArtist() {
+        if (!this.isConnected()) {
+            return this.getLocalActiveArtist();
+        }
+
+        const supabase = getSupabase();
+        const userId = authManager.getUserId();
+
+        // Try to get active artist first
+        let { data, error } = await supabase
+            .from('artist_profiles')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('is_active', true)
+            .single();
+
+        // If no active artist, get the first one
+        if (error || !data) {
+            const { data: firstArtist } = await supabase
+                .from('artist_profiles')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: true })
+                .limit(1)
+                .single();
+
+            if (firstArtist) {
+                // Set it as active
+                await this.setActiveArtist(firstArtist.id);
+                data = firstArtist;
+            }
+        }
+
+        if (!data) return null;
+
+        return {
+            id: data.id,
+            name: data.bio?.name || 'Artista sem nome',
+            genre: data.bio?.genre || '',
+            isActive: true,
+            bio: data.bio,
+            achievements: data.achievements,
+            events: data.events,
+            releases: data.releases,
+            social: data.social
+        };
+    }
+
+    // Set an artist as active
+    async setActiveArtist(artistId) {
+        if (!this.isConnected()) {
+            return this.setLocalActiveArtist(artistId);
+        }
+
+        const supabase = getSupabase();
+        const userId = authManager.getUserId();
+
+        // Deactivate all artists first
+        await supabase
+            .from('artist_profiles')
+            .update({ is_active: false })
+            .eq('user_id', userId);
+
+        // Activate the selected one
+        const { data, error } = await supabase
+            .from('artist_profiles')
+            .update({ is_active: true })
+            .eq('id', artistId)
+            .eq('user_id', userId)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error setting active artist:', error);
+            throw error;
+        }
+
+        return data;
+    }
+
+    // Create a new artist
+    async createArtist(name, genre = '') {
+        if (!this.isConnected()) {
+            return this.createLocalArtist(name, genre);
+        }
+
+        const supabase = getSupabase();
+        const userId = authManager.getUserId();
+
+        // Check artist limit (max 10)
+        const artists = await this.getArtists();
+        if (artists.length >= 10) {
+            throw new Error('Limite máximo de 10 artistas atingido');
+        }
+
+        const { data, error } = await supabase
+            .from('artist_profiles')
+            .insert({
+                user_id: userId,
+                bio: {
+                    name: name.trim(),
+                    fullName: '',
+                    genre: genre.trim(),
+                    description: '',
+                    location: '',
+                    yearsActive: ''
+                },
+                achievements: [],
+                events: [],
+                releases: [],
+                social: {
+                    instagram: '',
+                    facebook: '',
+                    twitter: '',
+                    tiktok: '',
+                    youtube: '',
+                    website: ''
+                },
+                is_active: artists.length === 0 // First artist is active by default
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Error creating artist:', error);
+            throw error;
+        }
+
+        return {
+            id: data.id,
+            name: data.bio?.name || name,
+            genre: data.bio?.genre || genre,
+            isActive: data.is_active
+        };
+    }
+
+    // Delete an artist
+    async deleteArtist(artistId) {
+        if (!this.isConnected()) {
+            return this.deleteLocalArtist(artistId);
+        }
+
+        const supabase = getSupabase();
+        const userId = authManager.getUserId();
+
+        // Don't allow deleting the last artist
+        const artists = await this.getArtists();
+        if (artists.length <= 1) {
+            throw new Error('Você deve ter pelo menos um artista');
+        }
+
+        const artistToDelete = artists.find(a => a.id === artistId);
+        const wasActive = artistToDelete?.isActive;
+
+        const { error } = await supabase
+            .from('artist_profiles')
+            .delete()
+            .eq('id', artistId)
+            .eq('user_id', userId);
+
+        if (error) {
+            console.error('Error deleting artist:', error);
+            throw error;
+        }
+
+        // If we deleted the active artist, activate another one
+        if (wasActive) {
+            const remainingArtists = artists.filter(a => a.id !== artistId);
+            if (remainingArtists.length > 0) {
+                await this.setActiveArtist(remainingArtists[0].id);
+            }
+        }
+
+        return true;
+    }
+
+    // Local storage fallback for multi-artist
+    getLocalArtists() {
+        try {
+            return JSON.parse(localStorage.getItem('artists_list')) || [];
+        } catch {
+            return [];
+        }
+    }
+
+    getLocalActiveArtist() {
+        const artists = this.getLocalArtists();
+        return artists.find(a => a.isActive) || artists[0] || null;
+    }
+
+    setLocalActiveArtist(artistId) {
+        let artists = this.getLocalArtists();
+        artists = artists.map(a => ({ ...a, isActive: a.id === artistId }));
+        localStorage.setItem('artists_list', JSON.stringify(artists));
+        return artists.find(a => a.id === artistId);
+    }
+
+    createLocalArtist(name, genre = '') {
+        const artists = this.getLocalArtists();
+        if (artists.length >= 10) {
+            throw new Error('Limite máximo de 10 artistas atingido');
+        }
+        const artist = {
+            id: Date.now().toString(),
+            name: name.trim(),
+            genre: genre.trim(),
+            isActive: artists.length === 0,
+            bio: { name: name.trim(), genre: genre.trim() },
+            createdAt: new Date().toISOString()
+        };
+        artists.push(artist);
+        localStorage.setItem('artists_list', JSON.stringify(artists));
+        return artist;
+    }
+
+    deleteLocalArtist(artistId) {
+        let artists = this.getLocalArtists();
+        if (artists.length <= 1) {
+            throw new Error('Você deve ter pelo menos um artista');
+        }
+        const wasActive = artists.find(a => a.id === artistId)?.isActive;
+        artists = artists.filter(a => a.id !== artistId);
+        if (wasActive && artists.length > 0) {
+            artists[0].isActive = true;
+        }
+        localStorage.setItem('artists_list', JSON.stringify(artists));
+        return true;
     }
 
     // Local storage fallback

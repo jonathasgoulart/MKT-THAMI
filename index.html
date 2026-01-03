@@ -99,6 +99,25 @@
                     <span class="label">Briefings</span>
                 </button>
             </nav>
+            <!-- Artist Selector -->
+            <div class="artist-selector" id="artist-selector" style="display: none;">
+                <div class="artist-dropdown-wrapper">
+                    <button class="artist-dropdown-btn" id="artist-dropdown-btn">
+                        <span class="artist-icon">🎤</span>
+                        <span class="artist-name" id="current-artist-name">Selecione um artista</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="artist-dropdown-menu" id="artist-dropdown-menu">
+                        <div class="artist-list" id="artist-list">
+                            <!-- Artists will be populated here -->
+                        </div>
+                        <hr class="dropdown-divider">
+                        <button class="add-artist-btn" id="add-artist-btn">
+                            <span>➕</span> Adicionar Artista
+                        </button>
+                    </div>
+                </div>
+            </div>
             <!-- User Info -->
             <div class="user-info" id="user-info" style="display: none;">
                 <span class="user-email" id="header-user-email"></span>
@@ -291,6 +310,25 @@
 
     <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
+
+    <!-- Add Artist Modal -->
+    <div class="modal-overlay" id="add-artist-modal" style="display: none;">
+        <div class="modal-content">
+            <h3>➕ Adicionar Novo Artista</h3>
+            <div class="form-group">
+                <label for="new-artist-name">Nome do Artista *</label>
+                <input type="text" id="new-artist-name" placeholder="Ex: João Silva" required>
+            </div>
+            <div class="form-group">
+                <label for="new-artist-genre">Gênero Musical</label>
+                <input type="text" id="new-artist-genre" placeholder="Ex: Pop, Rock, Sertanejo">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancel-add-artist">Cancelar</button>
+                <button class="btn-primary" id="confirm-add-artist">Criar Artista</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="error-trap.js"></script>
