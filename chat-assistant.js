@@ -274,6 +274,7 @@ class ChatAssistant {
 
     getSystemPrompt() {
         const profile = this.aiGenerator.profileManager.getFormattedContext();
+        const artistName = this.aiGenerator.profileManager.profile?.bio?.name || 'Artista';
         let knowledgeContext = '';
         if (this.knowledgeBase && this.knowledgeBase.documents && this.knowledgeBase.documents.length > 0) {
             knowledgeContext = this.knowledgeBase.getContextForAI(6000);
@@ -316,7 +317,7 @@ O usuário selecionou: **${platformNames[platform] || platform}**
 - Use o tom de voz adequado
 - Siga as melhores práticas
 
-# PERFIL DA ARTISTA
+# PERFIL DO ARTISTA: ${artistName}
 ${profile.substring(0, 2500)}
 
 # BRIEFINGS E ESTRATÉGIAS DO USUÁRIO

@@ -110,6 +110,8 @@ class AIGenerator {
     async generateWithGroq(contentType, topic, details, tone) {
         const config = this.getContentTypeConfig(contentType);
         const profile = this.profileManager.getFormattedContext();
+        const artistName = this.profileManager.profile?.bio?.name || 'o artista';
+        const artistGenre = this.profileManager.profile?.bio?.genre || 'música';
 
         // Get knowledge base context if available
         let knowledgeContext = '';
@@ -117,12 +119,13 @@ class AIGenerator {
             knowledgeContext = knowledgeBase.getContextForAI(2000);
         }
 
-        const systemPrompt = `Você é uma assistente de marketing para THAMI, uma cantora brasileira de Pop/R&B. 
-Contexto sobre a artista: ${profile.substring(0, 1500)}
+        const systemPrompt = `Você é uma assistente de marketing musical especializada em ajudar artistas. 
+Contexto sobre ${artistName} (${artistGenre}):
+${profile.substring(0, 1500)}
 ${knowledgeContext}
 
 Você é ${config.system} Sempre responda em Português do Brasil.
-Use as estratégias e briefings da base de conhecimento para criar conteúdo alinhado com a comunicação da artista.`;
+Use as estratégias e briefings da base de conhecimento para criar conteúdo alinhado com a comunicação do artista.`;
 
         const userPrompt = `Crie um post para ${config.name} sobre: "${topic}"
 ${details ? `Detalhes adicionais: ${details}` : ''}
@@ -172,8 +175,9 @@ IMPORTANTE: Gere APENAS o texto do post, sem introduções, explicações ou com
     async generateWithGemini(contentType, topic, details, tone) {
         const config = this.getContentTypeConfig(contentType);
         const profile = this.profileManager.getFormattedContext();
+        const artistName = this.profileManager.profile?.bio?.name || 'o artista';
 
-        const systemPrompt = `Aja como THAMI (cantora Pop/R&B). Contexto: ${profile.substring(0, 1000)}. Especialista em ${config.name}.`;
+        const systemPrompt = `Aja como ${artistName}. Contexto: ${profile.substring(0, 1000)}. Especialista em ${config.name}.`;
         const userPrompt = `Crie um post sobre "${topic}". Detalhes: ${details}. Tom: ${tone}. Gere APENAS o texto em Português sem introduções.`;
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`;

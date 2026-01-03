@@ -1,5 +1,5 @@
 // ===================================
-// THAMI Profile Management
+// Artist Profile Management
 // ===================================
 
 class ThamiProfile {
@@ -7,58 +7,26 @@ class ThamiProfile {
         this.storageKey = 'thami_profile';
         this.defaultProfile = {
             bio: {
-                name: 'THAMI',
-                fullName: 'Thamires [Sobrenome]',
-                genre: 'Pop, R&B, Soul',
-                description: 'THAMI é uma artista brasileira que conquistou o público com sua voz marcante e letras profundas. Com influências que vão do pop ao R&B, ela cria músicas que tocam o coração e fazem dançar.',
-                location: 'São Paulo, Brasil',
-                yearsActive: '2020 - Presente'
+                name: '',
+                fullName: '',
+                genre: '',
+                description: '',
+                location: '',
+                yearsActive: ''
             },
-            achievements: [
-                {
-                    title: 'Primeiro Single',
-                    description: 'Lançamento do single de estreia que alcançou 1 milhão de streams',
-                    date: '2020'
-                },
-                {
-                    title: 'Prêmio Revelação',
-                    description: 'Indicada como Revelação do Ano em premiação nacional',
-                    date: '2021'
-                }
-            ],
-            events: [
-                {
-                    title: 'Show em São Paulo',
-                    venue: 'Casa de Shows XYZ',
-                    date: '2024-01-15',
-                    city: 'São Paulo, SP',
-                    ticketLink: ''
-                }
-            ],
-            releases: [
-                {
-                    title: 'Último Single',
-                    type: 'Single',
-                    releaseDate: '2023-12-01',
-                    description: 'Uma balada emocionante sobre amor e superação',
-                    platforms: {
-                        spotify: '',
-                        deezer: '',
-                        appleMusic: '',
-                        youtube: ''
-                    }
-                }
-            ],
+            achievements: [],
+            events: [],
+            releases: [],
             social: {
-                instagram: '@thami',
-                facebook: 'thamioficial',
-                twitter: '@thami',
-                tiktok: '@thami',
-                youtube: '@thamioficial',
+                instagram: '',
+                facebook: '',
+                twitter: '',
+                tiktok: '',
+                youtube: '',
                 website: ''
             }
         };
-        
+
         this.profile = this.loadProfile();
     }
 
@@ -98,8 +66,9 @@ class ThamiProfile {
     // Get formatted profile for AI context
     getFormattedContext() {
         const p = this.profile;
-        let context = `# Perfil da Artista THAMI\n\n`;
-        
+        const artistName = p.bio.name || 'Artista';
+        let context = `# Perfil do(a) Artista ${artistName}\n\n`;
+
         // Bio
         context += `## Informações Básicas\n`;
         context += `Nome: ${p.bio.name}\n`;
@@ -108,7 +77,7 @@ class ThamiProfile {
         context += `Localização: ${p.bio.location}\n`;
         context += `Anos Ativos: ${p.bio.yearsActive}\n\n`;
         context += `Descrição: ${p.bio.description}\n\n`;
-        
+
         // Achievements
         if (p.achievements && p.achievements.length > 0) {
             context += `## Conquistas\n`;
@@ -117,7 +86,7 @@ class ThamiProfile {
             });
             context += '\n';
         }
-        
+
         // Events
         if (p.events && p.events.length > 0) {
             context += `## Próximos Eventos\n`;
@@ -126,7 +95,7 @@ class ThamiProfile {
             });
             context += '\n';
         }
-        
+
         // Releases
         if (p.releases && p.releases.length > 0) {
             context += `## Lançamentos Recentes\n`;
@@ -135,7 +104,7 @@ class ThamiProfile {
             });
             context += '\n';
         }
-        
+
         // Social
         context += `## Redes Sociais\n`;
         context += `Instagram: ${p.social.instagram}\n`;
@@ -146,7 +115,7 @@ class ThamiProfile {
         if (p.social.website) {
             context += `Website: ${p.social.website}\n`;
         }
-        
+
         return context;
     }
 
