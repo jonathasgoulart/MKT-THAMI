@@ -458,41 +458,54 @@ class DataService {
     // Knowledge Base Operations
     // =====================================================
 
-    async getKnowledgeDocuments() {
+    async getKnowledgeDocuments(artistId = null) {
         if (!this.isConnected()) {
-            return this.getLocalKnowledgeDocuments();
+            return this.getLocalKnowledgeDocuments(artistId);
         }
 
         const supabase = getSupabase();
         const userId = authManager.getUserId();
+        const targetArtistId = artistId || this.activeArtistId;
 
-        // Fetch user's documents AND global documents
-        const { data, error } = await supabase
+        // Build query
+        let query = supabase
             .from('knowledge_documents')
             .select('*')
-            .or(`user_id.eq.${userId},is_global.eq.true`)
             .order('created_at', { ascending: false });
+
+        // Filter: user's documents for this artist OR global documents
+        if (targetArtistId) {
+            // Get documents for this artist OR global docs OR docs without artist_id (legacy)
+            query = query.or(`and(user_id.eq.${userId},artist_id.eq.${targetArtistId}),is_global.eq.true,and(user_id.eq.${userId},artist_id.is.null)`);
+        } else {
+            // Fallback: user's documents OR global
+            query = query.or(`user_id.eq.${userId},is_global.eq.true`);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
             console.error('Error fetching knowledge documents:', error);
-            return this.getLocalKnowledgeDocuments();
+            return this.getLocalKnowledgeDocuments(artistId);
         }
 
         return data.map(doc => this.transformDocumentFromDB(doc));
     }
 
-    async addKnowledgeDocument(title, category, content) {
+    async addKnowledgeDocument(title, category, content, artistId = null) {
         if (!this.isConnected()) {
-            return this.addLocalKnowledgeDocument(title, category, content);
+            return this.addLocalKnowledgeDocument(title, category, content, artistId);
         }
 
         const supabase = getSupabase();
         const userId = authManager.getUserId();
+        const targetArtistId = artistId || this.activeArtistId;
 
         const { data, error } = await supabase
             .from('knowledge_documents')
             .insert({
                 user_id: userId,
+                artist_id: targetArtistId,
                 title: title.trim(),
                 category,
                 content: content.trim(),
@@ -584,27 +597,34 @@ class DataService {
             category: dbDoc.category,
             content: dbDoc.content,
             isGlobal: dbDoc.is_global,
+            artistId: dbDoc.artist_id,
             createdAt: dbDoc.created_at,
             updatedAt: dbDoc.updated_at
         };
     }
 
     // Local storage fallback for knowledge documents
-    getLocalKnowledgeDocuments() {
+    getLocalKnowledgeDocuments(artistId = null) {
         try {
-            return JSON.parse(localStorage.getItem('knowledge_base')) || [];
+            const docs = JSON.parse(localStorage.getItem('knowledge_base')) || [];
+            if (artistId) {
+                // Filter by artist or include docs without artistId (legacy)
+                return docs.filter(d => d.artistId === artistId || !d.artistId);
+            }
+            return docs;
         } catch {
             return [];
         }
     }
 
-    addLocalKnowledgeDocument(title, category, content) {
+    addLocalKnowledgeDocument(title, category, content, artistId = null) {
         const docs = this.getLocalKnowledgeDocuments();
         const doc = {
             id: Date.now().toString(),
             title: title.trim(),
             category,
             content: content.trim(),
+            artistId: artistId || this.activeArtistId,
             isGlobal: false,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()

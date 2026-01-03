@@ -1,65 +1,119 @@
 // ===================================
 // Knowledge Base Manager - Estratégias de Marketing
+// Integrado com DataService para suporte multi-artista
 // ===================================
 
 class KnowledgeBase {
     constructor() {
-        this.documents = this.loadDocuments();
+        this.documents = [];
+        this.initialized = false;
     }
 
     // ===================================
-    // Storage
+    // Initialization
     // ===================================
 
-    loadDocuments() {
+    async loadDocuments() {
         try {
-            return JSON.parse(localStorage.getItem('knowledge_base')) || [];
-        } catch {
-            return [];
+            if (typeof dataService !== 'undefined' && dataService.isConnected()) {
+                this.documents = await dataService.getKnowledgeDocuments();
+            } else {
+                // Fallback to localStorage
+                this.documents = JSON.parse(localStorage.getItem('knowledge_base')) || [];
+            }
+            this.initialized = true;
+        } catch (error) {
+            console.error('Error loading knowledge documents:', error);
+            this.documents = [];
         }
-    }
-
-    saveDocuments() {
-        localStorage.setItem('knowledge_base', JSON.stringify(this.documents));
+        return this.documents;
     }
 
     // ===================================
     // CRUD Operations
     // ===================================
 
-    addDocument(title, category, content) {
-        const doc = {
-            id: Date.now().toString(),
-            title: title.trim(),
-            category: category,
-            content: content.trim(),
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        this.documents.unshift(doc);
-        this.saveDocuments();
-        return doc;
-    }
+    async addDocument(title, category, content) {
+        try {
+            let doc;
+            if (typeof dataService !== 'undefined' && dataService.isConnected()) {
+                doc = await dataService.addKnowledgeDocument(title, category, content);
+            } else {
+                // Fallback to local
+                doc = {
+                    id: Date.now().toString(),
+                    title: title.trim(),
+                    category: category,
+                    content: content.trim(),
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                this.documents.unshift(doc);
+                this.saveToLocalStorage();
+            }
 
-    updateDocument(id, title, category, content) {
-        const index = this.documents.findIndex(d => d.id === id);
-        if (index !== -1) {
-            this.documents[index] = {
-                ...this.documents[index],
-                title: title.trim(),
-                category: category,
-                content: content.trim(),
-                updatedAt: new Date().toISOString()
-            };
-            this.saveDocuments();
-            return this.documents[index];
+            // Add to local array if using dataService
+            if (doc && typeof dataService !== 'undefined') {
+                this.documents.unshift(doc);
+            }
+
+            return doc;
+        } catch (error) {
+            console.error('Error adding document:', error);
+            throw error;
         }
-        return null;
     }
 
-    deleteDocument(id) {
-        this.documents = this.documents.filter(d => d.id !== id);
-        this.saveDocuments();
+    async updateDocument(id, title, category, content) {
+        try {
+            let doc;
+            if (typeof dataService !== 'undefined' && dataService.isConnected()) {
+                doc = await dataService.updateKnowledgeDocument(id, title, category, content);
+            } else {
+                const index = this.documents.findIndex(d => d.id === id);
+                if (index !== -1) {
+                    this.documents[index] = {
+                        ...this.documents[index],
+                        title: title.trim(),
+                        category: category,
+                        content: content.trim(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    doc = this.documents[index];
+                    this.saveToLocalStorage();
+                }
+            }
+
+            // Update local array
+            if (doc) {
+                const index = this.documents.findIndex(d => d.id === id);
+                if (index !== -1) {
+                    this.documents[index] = doc;
+                }
+            }
+
+            return doc;
+        } catch (error) {
+            console.error('Error updating document:', error);
+            throw error;
+        }
+    }
+
+    async deleteDocument(id) {
+        try {
+            if (typeof dataService !== 'undefined' && dataService.isConnected()) {
+                await dataService.deleteKnowledgeDocument(id);
+            }
+
+            // Remove from local array
+            this.documents = this.documents.filter(d => d.id !== id);
+            this.saveToLocalStorage();
+
+            return true;
+        } catch (error) {
+            console.error('Error deleting document:', error);
+            throw error;
+        }
     }
 
     getDocument(id) {
@@ -68,6 +122,14 @@ class KnowledgeBase {
 
     getAllDocuments() {
         return this.documents;
+    }
+
+    saveToLocalStorage() {
+        try {
+            localStorage.setItem('knowledge_base', JSON.stringify(this.documents));
+        } catch (error) {
+            console.error('Error saving to localStorage:', error);
+        }
     }
 
     // ===================================
@@ -156,7 +218,7 @@ class KnowledgeBase {
         return {
             total: this.documents.length,
             byCategory: categoryCount,
-            totalCharacters: this.documents.reduce((sum, d) => sum + d.content.length, 0)
+            totalCharacters: this.documents.reduce((sum, d) => sum + (d.content?.length || 0), 0)
         };
     }
 
@@ -173,7 +235,7 @@ class KnowledgeBase {
             const data = JSON.parse(jsonString);
             if (Array.isArray(data)) {
                 this.documents = data;
-                this.saveDocuments();
+                this.saveToLocalStorage();
                 return true;
             }
         } catch {
@@ -184,7 +246,7 @@ class KnowledgeBase {
 
     clearAll() {
         this.documents = [];
-        this.saveDocuments();
+        this.saveToLocalStorage();
     }
 }
 

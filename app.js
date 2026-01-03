@@ -43,6 +43,11 @@ async function initializeApp() {
     knowledgeBase = new KnowledgeBase();
     chatAssistant = new ChatAssistant(aiGenerator, knowledgeBase);
 
+    // Load knowledge base documents (async)
+    knowledgeBase.loadDocuments().then(() => {
+        renderKnowledgeList();
+    });
+
     // Setup event listeners
     setupNavigation();
     setupDashboard();
@@ -607,7 +612,7 @@ function hideKnowledgeForm() {
     document.getElementById('knowledge-form-container').style.display = 'none';
 }
 
-function saveKnowledgeDocument() {
+async function saveKnowledgeDocument() {
     const title = document.getElementById('knowledge-title').value.trim();
     const category = document.getElementById('knowledge-category').value;
     const content = document.getElementById('knowledge-content').value.trim();
@@ -623,23 +628,33 @@ function saveKnowledgeDocument() {
         return;
     }
 
-    if (editId) {
-        knowledgeBase.updateDocument(editId, title, category, content);
-        showToast('Documento atualizado!', 'success');
-    } else {
-        knowledgeBase.addDocument(title, category, content);
-        showToast('Documento adicionado!', 'success');
-    }
+    try {
+        if (editId) {
+            await knowledgeBase.updateDocument(editId, title, category, content);
+            showToast('Documento atualizado!', 'success');
+        } else {
+            await knowledgeBase.addDocument(title, category, content);
+            showToast('Documento adicionado!', 'success');
+        }
 
-    hideKnowledgeForm();
-    renderKnowledgeList();
+        hideKnowledgeForm();
+        renderKnowledgeList();
+    } catch (error) {
+        console.error('Error saving document:', error);
+        showToast('Erro ao salvar documento', 'error');
+    }
 }
 
-function deleteKnowledgeDocument(id) {
+async function deleteKnowledgeDocument(id) {
     if (confirm('Deseja excluir este documento?')) {
-        knowledgeBase.deleteDocument(id);
-        showToast('Documento excluído', 'info');
-        renderKnowledgeList();
+        try {
+            await knowledgeBase.deleteDocument(id);
+            showToast('Documento excluído', 'info');
+            renderKnowledgeList();
+        } catch (error) {
+            console.error('Error deleting document:', error);
+            showToast('Erro ao excluir documento', 'error');
+        }
     }
 }
 
