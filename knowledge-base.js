@@ -5,7 +5,8 @@
 
 class KnowledgeBase {
     constructor() {
-        this.documents = [];
+        this.documents = []; // Documents shown in list (no globals for regular users)
+        this.documentsWithGlobals = []; // All documents including globals (for AI context)
         this.initialized = false;
     }
 
@@ -16,15 +17,21 @@ class KnowledgeBase {
     async loadDocuments() {
         try {
             if (typeof dataService !== 'undefined' && dataService.isConnected()) {
+                // Load documents for list (respects admin visibility rules)
                 this.documents = await dataService.getKnowledgeDocuments();
+
+                // Load documents WITH globals for AI context
+                this.documentsWithGlobals = await dataService.getKnowledgeDocuments(null, true);
             } else {
                 // Fallback to localStorage
                 this.documents = JSON.parse(localStorage.getItem('knowledge_base')) || [];
+                this.documentsWithGlobals = this.documents;
             }
             this.initialized = true;
         } catch (error) {
             console.error('Error loading knowledge documents:', error);
             this.documents = [];
+            this.documentsWithGlobals = [];
         }
         return this.documents;
     }
@@ -179,11 +186,41 @@ class KnowledgeBase {
     // AI Context Generation
     // ===================================
 
+    // Get context for AI - includes global docs even for regular users
+    async getContextForAIWithGlobals(maxLength = 3000) {
+        let allDocs = [...this.documents];
+
+        // Load global documents for AI context (even if not shown in list)
+        try {
+            if (typeof dataService !== 'undefined' && dataService.isConnected()) {
+                const docsWithGlobal = await dataService.getKnowledgeDocuments(null, true);
+                // Merge without duplicates
+                const existingIds = new Set(allDocs.map(d => d.id));
+                for (const doc of docsWithGlobal) {
+                    if (!existingIds.has(doc.id)) {
+                        allDocs.push(doc);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error loading global docs for AI:', error);
+        }
+
+        return this._formatContextFromDocs(allDocs, maxLength);
+    }
+
+    // Synchronous version using cached documents with globals (for AI context)
     getContextForAI(maxLength = 3000) {
-        if (this.documents.length === 0) return '';
+        // Use documentsWithGlobals which includes global docs for AI training
+        return this._formatContextFromDocs(this.documentsWithGlobals, maxLength);
+    }
+
+    // Internal method to format context from docs array
+    _formatContextFromDocs(docs, maxLength) {
+        if (docs.length === 0) return '';
 
         // Sort by category priority
-        const sorted = [...this.documents].sort((a, b) => {
+        const sorted = [...docs].sort((a, b) => {
             const catA = this.getCategoryById(a.category);
             const catB = this.getCategoryById(b.category);
             return catA.priority - catB.priority;

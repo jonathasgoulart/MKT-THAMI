@@ -458,7 +458,7 @@ class DataService {
     // Knowledge Base Operations
     // =====================================================
 
-    async getKnowledgeDocuments(artistId = null) {
+    async getKnowledgeDocuments(artistId = null, includeGlobal = false) {
         if (!this.isConnected()) {
             return this.getLocalKnowledgeDocuments(artistId);
         }
@@ -467,19 +467,32 @@ class DataService {
         const userId = authManager.getUserId();
         const targetArtistId = artistId || this.activeArtistId;
 
+        // Check if user is admin - admins see global docs in their list
+        const isAdmin = authManager.isUserAdmin();
+
         // Build query
         let query = supabase
             .from('knowledge_documents')
             .select('*')
             .order('created_at', { ascending: false });
 
-        // Filter: user's documents for this artist OR global documents
+        // Filter logic:
+        // - Regular users: only their own artist-specific documents (NO global docs in list)
+        // - Admins or includeGlobal=true: include global documents
         if (targetArtistId) {
-            // Get documents for this artist OR global docs OR docs without artist_id (legacy)
-            query = query.or(`and(user_id.eq.${userId},artist_id.eq.${targetArtistId}),is_global.eq.true,and(user_id.eq.${userId},artist_id.is.null)`);
+            if (isAdmin || includeGlobal) {
+                // Admin or AI context: include global docs
+                query = query.or(`and(user_id.eq.${userId},artist_id.eq.${targetArtistId}),is_global.eq.true,and(user_id.eq.${userId},artist_id.is.null)`);
+            } else {
+                // Regular user: only their artist-specific docs (NO global)
+                query = query.or(`and(user_id.eq.${userId},artist_id.eq.${targetArtistId}),and(user_id.eq.${userId},artist_id.is.null)`);
+            }
         } else {
-            // Fallback: user's documents OR global
-            query = query.or(`user_id.eq.${userId},is_global.eq.true`);
+            if (isAdmin || includeGlobal) {
+                query = query.or(`user_id.eq.${userId},is_global.eq.true`);
+            } else {
+                query = query.eq('user_id', userId).eq('is_global', false);
+            }
         }
 
         const { data, error } = await query;
