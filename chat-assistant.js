@@ -433,40 +433,19 @@ Responda SEMPRE em Português do Brasil, usando linguagem natural e contemporân
         try {
             this.isTyping = true;
 
-            // Check if running locally or in production
-            const isLocal = window.location.hostname === 'localhost' ||
-                window.location.hostname === '127.0.0.1' ||
-                window.location.protocol === 'file:';
+            // Always use the secure backend proxy
+            const provider = this.aiGenerator.provider || 'groq';
 
-            let response;
-
-            if (isLocal) {
-                // Local: call Groq API directly (requires API key in settings)
-                response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${this.aiGenerator.groqApiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'llama-3.3-70b-versatile',
-                        messages: apiMessages,
-                        temperature: 0.5,
-                        max_tokens: 2000
-                    })
-                });
-            } else {
-                // Production: use Netlify Function (API key on server)
-                response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: apiMessages,
-                        temperature: 0.5,
-                        max_tokens: 2000
-                    })
-                });
-            }
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: apiMessages,
+                    provider: provider,
+                    temperature: 0.7,
+                    max_tokens: 2000
+                })
+            });
 
             const data = await response.json();
 

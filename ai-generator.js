@@ -134,18 +134,16 @@ Tom desejado: ${tone}
 IMPORTANTE: Gere APENAS o texto do post, sem introduções, explicações ou comentários. O texto deve estar pronto para publicar.`;
 
         try {
-            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            // Use secure backend proxy
+            const response = await fetch('/api/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.groqApiKey}`
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile',
                     messages: [
                         { role: 'system', content: systemPrompt },
                         { role: 'user', content: userPrompt }
                     ],
+                    provider: 'groq',
                     temperature: 0.7,
                     max_tokens: 1024
                 })
@@ -180,52 +178,36 @@ IMPORTANTE: Gere APENAS o texto do post, sem introduções, explicações ou com
         const systemPrompt = `Aja como ${artistName}. Contexto: ${profile.substring(0, 1000)}. Especialista em ${config.name}.`;
         const userPrompt = `Crie um post sobre "${topic}". Detalhes: ${details}. Tom: ${tone}. Gere APENAS o texto em Português sem introduções.`;
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`;
-
         try {
-            const body = {
-                system_instruction: { parts: [{ text: systemPrompt }] },
-                contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-                safetySettings: [
-                    { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-                    { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-                    { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-                    { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
-                ]
-            };
-
-            const response = await fetch(url, {
+            // Use secure backend proxy
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify({
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: userPrompt }
+                    ],
+                    provider: 'gemini',
+                    temperature: 0.7,
+                    max_tokens: 1024
+                })
             });
 
-            const data = await response.json().catch(() => ({}));
+            const data = await response.json();
 
-            if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                return this.formatGeneratedContent(data.candidates[0].content.parts[0].text, contentType);
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'Erro na API do Gemini');
             }
 
-            // Fallback simplificado
-            const resFallback = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }] })
-            });
-
-            const dataFallback = await resFallback.json().catch(() => ({}));
-            if (resFallback.ok && dataFallback.candidates?.[0]?.content?.parts?.[0]?.text) {
-                return this.formatGeneratedContent(dataFallback.candidates[0].content.parts[0].text, contentType);
+            if (data.choices?.[0]?.message?.content) {
+                return this.formatGeneratedContent(data.choices[0].message.content, contentType);
             }
 
-            const rawMsg = (data.error?.message || JSON.stringify(data) || "").toLowerCase();
-            if (rawMsg.includes("must contain") || rawMsg.includes("empty") || rawMsg.includes("output text")) {
-                throw new Error("GOOGLE_ACCOUNT_ERROR");
-            }
-            throw new Error(data.error?.message || "O Google não gerou o texto.");
-        } catch (e) {
-            if (e.message === "GOOGLE_ACCOUNT_ERROR") throw e;
-            throw new Error(e.message);
+            throw new Error('Resposta vazia do Gemini');
+        } catch (error) {
+            console.error('Gemini API Error:', error);
+            throw error;
         }
     }
 
