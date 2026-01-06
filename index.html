@@ -98,6 +98,10 @@
                     <span class="icon">📋</span>
                     <span class="label">Briefings</span>
                 </button>
+                <button class="nav-btn" data-view="settings" aria-label="Configurações">
+                    <span class="icon">⚙️</span>
+                    <span class="label">Config</span>
+                </button>
             </nav>
             <!-- Artist Selector -->
             <div class="artist-selector" id="artist-selector" style="display: none;">
@@ -180,8 +184,17 @@
                             <span>➤</span>
                         </button>
                     </div>
-                    <button class="refresh-btn-mobile" id="clear-chat-btn" title="Nova conversa">🔄 Nova
-                        conversa</button>
+                    <div class="chat-options">
+                        <button class="refresh-btn-mobile" id="clear-chat-btn" title="Nova conversa">🔄 Nova
+                            conversa</button>
+                        <div class="ai-provider-selector">
+                            <span class="ai-label">IA:</span>
+                            <select id="chat-ai-provider" class="ai-select">
+                                <option value="groq">🚀 Groq</option>
+                                <option value="gemini">✨ Gemini</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -303,6 +316,59 @@
                         <p>Nenhuma estratégia cadastrada ainda</p>
                         <p class="empty-hint">Adicione briefings, estratégias e conteúdos para alimentar a IA</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings View -->
+        <section id="settings-view" class="view-section">
+            <div class="settings-container">
+                <h2 class="section-title">⚙️ Configurações</h2>
+                <p class="section-description">Configure a IA e suas chaves de API</p>
+
+                <!-- AI Provider Selection -->
+                <div class="settings-card">
+                    <h3>🤖 Provedor de IA</h3>
+                    <p class="settings-hint">Escolha qual IA será usada para gerar conteúdo</p>
+                    <div class="form-group">
+                        <label for="ai-provider-select">Provedor Ativo</label>
+                        <select id="ai-provider-select">
+                            <option value="groq">🚀 Groq (LLaMA 3) - Rápido e gratuito</option>
+                            <option value="gemini">✨ Gemini (Google) - Alta qualidade</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Groq API Key -->
+                <div class="settings-card">
+                    <h3>🚀 Groq API Key</h3>
+                    <p class="settings-hint">Obtenha sua chave gratuita em <a href="https://console.groq.com"
+                            target="_blank">console.groq.com</a></p>
+                    <div class="form-group">
+                        <label for="groq-api-key-input">Chave de API do Groq</label>
+                        <input type="password" id="groq-api-key-input" placeholder="gsk_xxxxxxxxxx...">
+                    </div>
+                    <div class="settings-actions">
+                        <button class="btn-secondary" id="test-groq-btn">🔗 Testar Conexão</button>
+                        <button class="btn-primary" id="save-groq-key-btn">💾 Salvar</button>
+                    </div>
+                    <div id="groq-status" class="api-status"></div>
+                </div>
+
+                <!-- Gemini API Key -->
+                <div class="settings-card">
+                    <h3>✨ Gemini API Key</h3>
+                    <p class="settings-hint">Obtenha sua chave em <a href="https://aistudio.google.com"
+                            target="_blank">aistudio.google.com</a></p>
+                    <div class="form-group">
+                        <label for="api-key-input">Chave de API do Gemini</label>
+                        <input type="password" id="api-key-input" placeholder="AIza...">
+                    </div>
+                    <div class="settings-actions">
+                        <button class="btn-secondary" id="test-connection-btn">🔗 Testar Conexão</button>
+                        <button class="btn-primary" id="save-api-key-btn">💾 Salvar</button>
+                    </div>
+                    <div id="gemini-status" class="api-status"></div>
                 </div>
             </div>
         </section>

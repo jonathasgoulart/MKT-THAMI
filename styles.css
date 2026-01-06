@@ -2136,3 +2136,103 @@ a:hover {
         margin-left: 0;
     }
 }
+
+/* ===================================
+   AI Provider Selector (Chat)
+   =================================== */
+
+.chat-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.ai-provider-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.ai-label {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.ai-select {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.ai-select:hover {
+    border-color: var(--primary-color);
+}
+
+.ai-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-glow);
+}
+
+/* ===================================
+   Settings View
+   =================================== */
+
+.settings-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.settings-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.settings-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.settings-hint {
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.settings-hint a {
+    color: var(--primary-color);
+}
+
+.settings-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.api-status {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+}
+
+.api-status.success {
+    background: rgba(16, 163, 127, 0.1);
+    color: var(--primary-color);
+}
+
+.api-status.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}

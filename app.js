@@ -259,6 +259,21 @@ function setupChat() {
         });
     });
 
+    // AI Provider Selector (Chat)
+    const chatAiProvider = document.getElementById('chat-ai-provider');
+    if (chatAiProvider) {
+        // Set initial value from aiGenerator
+        chatAiProvider.value = aiGenerator.provider;
+
+        chatAiProvider.addEventListener('change', (e) => {
+            aiGenerator.setProvider(e.target.value);
+            // Sync with settings page selector
+            const settingsProvider = document.getElementById('ai-provider-select');
+            if (settingsProvider) settingsProvider.value = e.target.value;
+            showToast(`IA alterada para ${e.target.value === 'groq' ? 'Groq (LLaMA)' : 'Gemini'}`, 'info');
+        });
+    }
+
     // Initial render
     renderChatMessages();
 }
@@ -727,6 +742,9 @@ function setupSettings() {
         providerSelect.value = aiGenerator.provider;
         providerSelect.addEventListener('change', (e) => {
             aiGenerator.setProvider(e.target.value);
+            // Sync with chat selector
+            const chatProvider = document.getElementById('chat-ai-provider');
+            if (chatProvider) chatProvider.value = e.target.value;
             updateProviderUI();
             showToast(`Provedor alterado para ${e.target.value === 'groq' ? 'Groq' : 'Gemini'}`, 'info');
         });
