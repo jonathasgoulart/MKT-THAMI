@@ -62,18 +62,19 @@
 
 /* Lucide Icons Global Style */
 .lucide {
-    width: 1.2em;
-    height: 1.2em;
+    width: 20px;
+    height: 20px;
     vertical-align: middle;
     margin-top: -2px;
+    display: inline-block;
 }
 
 .icon .lucide,
 .btn-icon .lucide,
 .nav-btn .lucide,
 .logo-icon .lucide {
-    width: 1.5em;
-    height: 1.5em;
+    width: 24px;
+    height: 24px;
 }
 
 .stat-icon .lucide {
@@ -1013,31 +1014,83 @@ a:hover {
 }
 
 @media (max-width: 768px) {
+    .app-header {
+        padding: var(--spacing-xs) var(--spacing-md);
+    }
+
     .header-content {
-        flex-direction: column;
-        gap: var(--spacing-md);
+        flex-direction: row;
+        justify-content: space-between;
+        gap: var(--spacing-sm);
+        padding: 5px 0;
+    }
+
+    .logo-section {
+        gap: var(--spacing-xs);
+    }
+
+    .logo-icon .lucide {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .logo-text h1 {
+        font-size: 1.1rem;
+    }
+
+    .logo-text .subtitle {
+        display: none;
     }
 
     .header-nav {
-        width: 100%;
-        justify-content: space-around;
+        width: auto;
+        gap: var(--spacing-xs);
+        order: 2;
+    }
+
+    .nav-btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .nav-btn .icon .lucide {
+        width: 1.1rem;
+        height: 1.1rem;
     }
 
     .nav-btn .label {
         display: none;
     }
 
+    .artist-selector {
+        order: 3;
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .artist-dropdown-btn {
+        padding: 4px 8px;
+        font-size: 0.85rem;
+    }
+
+    .user-info {
+        display: none !important;
+        /* Hide user info on mobile header to save space */
+    }
+
     .action-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: var(--spacing-sm);
     }
 
     .library-header {
         flex-direction: column;
+        gap: var(--spacing-sm);
     }
 
     .library-controls {
         width: 100%;
         flex-direction: column;
+        gap: var(--spacing-xs);
     }
 
     #library-search {
@@ -1047,20 +1100,49 @@ a:hover {
 
 @media (max-width: 480px) {
     .app-main {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
     }
 
-    .stats-container {
-        grid-template-columns: 1fr;
+    .chat-dashboard {
+        height: calc(100vh - 120px);
+        min-height: auto;
     }
 
-    .action-grid {
-        grid-template-columns: 1fr;
+    .platform-selector {
+        padding: var(--spacing-xs) var(--spacing-sm);
     }
 
-    .profile-tabs {
-        flex-wrap: nowrap;
-        overflow-x: auto;
+    .platform-label {
+        padding: 4px;
+    }
+
+    .chat-messages {
+        padding: var(--spacing-sm);
+    }
+
+    .chat-message {
+        max-width: 90%;
+        padding: 8px 12px;
+        font-size: 0.95rem;
+    }
+
+    .chat-quick-actions {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        gap: 6px;
+    }
+
+    .quick-action-btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .chat-input-container {
+        padding: var(--spacing-sm);
+    }
+
+    .chat-send-btn {
+        width: 40px;
+        height: 40px;
     }
 }
 
@@ -1109,6 +1191,34 @@ a:hover {
     color: var(--text-primary);
     font-family: var(--font-primary);
     min-width: 180px;
+}
+
+.chat-assistant-greeting {
+    margin-bottom: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: rgba(16, 185, 129, 0.05);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--primary-color);
+}
+
+.chat-assistant-greeting h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+.chat-assistant-greeting p {
+    margin: 4px 0 0 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.chat-assistant-greeting .platform-info {
+    font-size: 0.85rem;
+    margin-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .knowledge-stats {

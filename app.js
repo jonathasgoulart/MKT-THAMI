@@ -329,6 +329,8 @@ function renderChatMessages() {
         // Show quick actions
         const quickActions = document.getElementById('chat-quick-actions');
         if (quickActions) quickActions.style.display = 'flex';
+
+        if (window.lucide) lucide.createIcons();
         return;
     }
 
@@ -339,6 +341,7 @@ function renderChatMessages() {
     `).join('');
 
     scrollChatToBottom();
+    if (window.lucide) lucide.createIcons();
 }
 
 function formatChatMessage(content) {
@@ -711,8 +714,8 @@ function renderKnowledgeList() {
                         <strong style="font-size: 1.1rem;">${doc.title}</strong>
                     </div>
                     <div class="knowledge-item-actions">
-                        <button class="icon-btn" onclick="showKnowledgeForm('${doc.id}')" title="Editar">✏️</button>
-                        <button class="icon-btn" onclick="deleteKnowledgeDocument('${doc.id}')" title="Excluir">🗑️</button>
+                        <button class="icon-btn" onclick="showKnowledgeForm('${doc.id}')" title="Editar"><i data-lucide="edit"></i></button>
+                        <button class="icon-btn" onclick="deleteKnowledgeDocument('${doc.id}')" title="Excluir"><i data-lucide="trash-2"></i></button>
                     </div>
                 </div>
                 <div class="knowledge-item-content">
@@ -747,6 +750,8 @@ if (manualToggle) {
             btnText.textContent = active ? 'Criar Rascunho' : 'Gerar Conteúdo';
         }
     });
+
+    if (window.lucide) lucide.createIcons();
 }
 
 // Export data
