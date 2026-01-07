@@ -476,7 +476,6 @@ Responda SEMPRE em Português do Brasil, usando linguagem natural e contemporân
     getQuickPrompts() {
         return [
             { icon: 'camera', text: 'Instagram Strategy', prompt: 'Preciso de um post estratégico para Instagram' },
-            { icon: 'rocket', text: 'Lançamento', prompt: 'Vou lançar uma música nova e preciso de uma estratégia completa de divulgação' },
             { icon: 'megaphone', text: 'Show/Evento', prompt: 'Preciso divulgar um show com uma campanha completa' },
             { icon: 'lightbulb', text: 'Ideia criativa', prompt: 'Me sugira ideias criativas de conteúdo para esta semana' },
             { icon: 'calendar', text: 'Calendário', prompt: 'Me ajuda a montar um calendário de conteúdo para os próximos 7 dias' }

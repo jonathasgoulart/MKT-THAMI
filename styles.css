@@ -1015,61 +1015,79 @@ a:hover {
 
 @media (max-width: 768px) {
     .app-header {
-        padding: var(--spacing-xs) var(--spacing-md);
+        padding: var(--spacing-sm);
     }
 
     .header-content {
-        flex-direction: row;
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: center;
         gap: var(--spacing-sm);
         padding: 5px 0;
     }
 
     .logo-section {
-        gap: var(--spacing-xs);
-    }
-
-    .logo-icon .lucide {
-        width: 1.25rem;
-        height: 1.25rem;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 4px;
     }
 
     .logo-text h1 {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        /* Reduced font size */
+        white-space: nowrap;
     }
 
-    .logo-text .subtitle {
-        display: none;
+    .logo-icon .lucide {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .header-bottom-row {
+        /* New helper container if needed, or just style children */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: var(--spacing-sm);
     }
 
     .header-nav {
         width: auto;
         gap: var(--spacing-xs);
-        order: 2;
+        order: 1;
+        display: flex;
+        justify-content: flex-start;
     }
 
     .nav-btn {
-        padding: var(--spacing-xs) var(--spacing-sm);
+        padding: 6px;
     }
 
     .nav-btn .icon .lucide {
-        width: 1.1rem;
-        height: 1.1rem;
-    }
-
-    .nav-btn .label {
-        display: none;
+        width: 1.4rem;
+        /* Increased size */
+        height: 1.4rem;
     }
 
     .artist-selector {
-        order: 3;
+        order: 2;
         flex: 1;
-        min-width: 100px;
+        min-width: 120px;
+        max-width: 180px;
     }
 
     .artist-dropdown-btn {
-        padding: 4px 8px;
+        padding: 6px 10px;
         font-size: 0.85rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .artist-name {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .user-info {
@@ -1100,49 +1118,52 @@ a:hover {
 
 @media (max-width: 480px) {
     .app-main {
-        padding: var(--spacing-sm);
+        padding: 8px;
     }
 
     .chat-dashboard {
-        height: calc(100vh - 120px);
+        height: calc(100vh - 150px);
         min-height: auto;
     }
 
-    .platform-selector {
-        padding: var(--spacing-xs) var(--spacing-sm);
-    }
-
-    .platform-label {
-        padding: 4px;
-    }
-
-    .chat-messages {
-        padding: var(--spacing-sm);
-    }
-
-    .chat-message {
-        max-width: 90%;
-        padding: 8px 12px;
-        font-size: 0.95rem;
-    }
-
     .chat-quick-actions {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        gap: 6px;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 8px;
+        gap: 8px;
+        justify-content: flex-start;
     }
 
     .quick-action-btn {
+        flex: 0 0 auto;
         padding: 6px 10px;
         font-size: 0.8rem;
     }
 
-    .chat-input-container {
-        padding: var(--spacing-sm);
+    .chat-options {
+        display: flex;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 8px;
     }
 
-    .chat-send-btn {
-        width: 40px;
-        height: 40px;
+    .refresh-btn-mobile {
+        flex: 1;
+        white-space: nowrap;
+        padding: 6px 8px;
+        font-size: 0.85rem;
+    }
+
+    .ai-provider-selector {
+        flex: 0 0 auto;
+    }
+
+    .ai-select {
+        padding: 4px 24px 4px 8px;
+        font-size: 0.85rem;
     }
 }
 

@@ -90,36 +90,38 @@
                     <span class="subtitle">AI Assistant</span>
                 </div>
             </div>
-            <nav class="header-nav">
-                <button class="nav-btn" data-view="dashboard" aria-label="Dashboard">
-                    <span class="icon"><i data-lucide="message-circle"></i></span>
-                    <span class="label">Chat</span>
-                </button>
-                <button class="nav-btn" data-view="profile" aria-label="Profile Manager">
-                    <span class="icon"><i data-lucide="user"></i></span>
-                    <span class="label">Perfil</span>
-                </button>
-                <button class="nav-btn" data-view="knowledge" aria-label="Briefings">
-                    <span class="icon"><i data-lucide="folder-kanban"></i></span>
-                    <span class="label">Briefings</span>
-                </button>
-            </nav>
-            <!-- Artist Selector -->
-            <div class="artist-selector" id="artist-selector" style="display: none;">
-                <div class="artist-dropdown-wrapper">
-                    <button class="artist-dropdown-btn" id="artist-dropdown-btn">
-                        <span class="artist-icon"><i data-lucide="mic"></i></span>
-                        <span class="artist-name" id="current-artist-name">Selecione um artista</span>
-                        <span class="dropdown-arrow"><i data-lucide="chevron-down"></i></span>
+            <div class="header-bottom-row">
+                <nav class="header-nav">
+                    <button class="nav-btn" data-view="dashboard" aria-label="Dashboard">
+                        <span class="icon"><i data-lucide="message-circle"></i></span>
+                        <span class="label">Chat</span>
                     </button>
-                    <div class="artist-dropdown-menu" id="artist-dropdown-menu">
-                        <div class="artist-list" id="artist-list">
-                            <!-- Artists will be populated here -->
-                        </div>
-                        <hr class="dropdown-divider">
-                        <button class="add-artist-btn" id="add-artist-btn">
-                            <i data-lucide="plus"></i> Adicionar Artista
+                    <button class="nav-btn" data-view="profile" aria-label="Profile Manager">
+                        <span class="icon"><i data-lucide="user"></i></span>
+                        <span class="label">Perfil</span>
+                    </button>
+                    <button class="nav-btn" data-view="knowledge" aria-label="Briefings">
+                        <span class="icon"><i data-lucide="folder-kanban"></i></span>
+                        <span class="label">Briefings</span>
+                    </button>
+                </nav>
+                <!-- Artist Selector -->
+                <div class="artist-selector" id="artist-selector" style="display: none;">
+                    <div class="artist-dropdown-wrapper">
+                        <button class="artist-dropdown-btn" id="artist-dropdown-btn">
+                            <span class="artist-icon"><i data-lucide="mic"></i></span>
+                            <span class="artist-name" id="current-artist-name">Selecione um artista</span>
+                            <span class="dropdown-arrow"><i data-lucide="chevron-down"></i></span>
                         </button>
+                        <div class="artist-dropdown-menu" id="artist-dropdown-menu">
+                            <div class="artist-list" id="artist-list">
+                                <!-- Artists will be populated here -->
+                            </div>
+                            <hr class="dropdown-divider">
+                            <button class="add-artist-btn" id="add-artist-btn">
+                                <i data-lucide="plus"></i> Adicionar Artista
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -162,10 +164,6 @@
                 <div class="chat-quick-actions" id="chat-quick-actions">
                     <button class="quick-action-btn" data-prompt="Preciso de um post estratégico">
                         <i data-lucide="file-text"></i> Post
-                    </button>
-                    <button class="quick-action-btn"
-                        data-prompt="Vou lançar uma música nova e preciso de uma estratégia completa">
-                        <i data-lucide="rocket"></i> Lançamento
                     </button>
                     <button class="quick-action-btn" data-prompt="Preciso divulgar um show">
                         <i data-lucide="mic"></i> Show
