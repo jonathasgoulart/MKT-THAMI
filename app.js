@@ -63,8 +63,8 @@ async function initializeApp() {
     contentManager.renderRecentContent();
     profileManager.renderProfilePreview();
 
-    // Check API key status
-    checkApiKeyStatus();
+    // Initialize Lucide icons
+    if (window.lucide) lucide.createIcons();
 }
 
 // Auth UI Update
@@ -144,6 +144,9 @@ function switchView(view) {
     if (targetView) {
         targetView.classList.add('active');
         currentView = view;
+
+        // Refresh Lucide icons for the new view
+        if (window.lucide) lucide.createIcons();
 
         // Refresh content when switching views
         if (view === 'library') {
@@ -283,13 +286,6 @@ async function sendChatMessage() {
     const message = input.value.trim();
 
     if (!message) return;
-
-    // Check API key
-    if (!aiGenerator.hasApiKey()) {
-        showToast('Configure sua API Key do Groq nas configurações', 'error');
-        setTimeout(() => switchView('settings'), 1500);
-        return;
-    }
 
     // Clear input
     input.value = '';
@@ -735,239 +731,71 @@ function renderKnowledgeList() {
 // Settings
 // ===================================
 
-function setupSettings() {
-    // AI Provider Selection
-    const providerSelect = document.getElementById('ai-provider-select');
-    if (providerSelect) {
-        providerSelect.value = aiGenerator.provider;
-        providerSelect.addEventListener('change', (e) => {
-            aiGenerator.setProvider(e.target.value);
-            // Sync with chat selector
-            const chatProvider = document.getElementById('chat-ai-provider');
-            if (chatProvider) chatProvider.value = e.target.value;
-            updateProviderUI();
-            showToast(`Provedor alterado para ${e.target.value === 'groq' ? 'Groq' : 'Gemini'}`, 'info');
-        });
-        updateProviderUI();
-    }
+/* setupSettings was here */
 
-    // Save Groq API Key
-    const saveGroqBtn = document.getElementById('save-groq-key-btn');
-    if (saveGroqBtn) {
-        saveGroqBtn.addEventListener('click', () => {
-            const apiKey = document.getElementById('groq-api-key-input').value.trim();
-            if (!apiKey) {
-                showToast('Por favor, insira uma API Key do Groq', 'error');
-                return;
-            }
-            aiGenerator.saveGroqApiKey(apiKey);
-            showToast('API Key do Groq salva com sucesso!', 'success');
-            updateGroqStatus();
-            document.getElementById('groq-api-key-input').value = '';
-        });
-    }
+// Manual Mode Toggle
+const manualToggle = document.getElementById('manual-mode-toggle');
+if (manualToggle) {
+    manualToggle.checked = aiGenerator.manualMode;
+    manualToggle.addEventListener('change', (e) => {
+        const active = e.target.checked;
+        aiGenerator.setManualMode(active);
+        showToast(active ? 'Modo Manual ativado' : 'IA ativada', 'info');
 
-    // Test Groq Connection
-    const testGroqBtn = document.getElementById('test-groq-btn');
-    if (testGroqBtn) {
-        testGroqBtn.addEventListener('click', async () => {
-            const btn = testGroqBtn;
-            const originalText = btn.textContent;
-            btn.textContent = 'Testando...';
-            btn.disabled = true;
-
-            try {
-                // Temporarily set provider to groq for testing
-                const prevProvider = aiGenerator.provider;
-                aiGenerator.provider = 'groq';
-                const result = await aiGenerator.testConnection();
-                aiGenerator.provider = prevProvider;
-
-                if (result.success) {
-                    alert(`✅ CONECTADO AO GROQ!\n\nModelo: ${result.model}\nVocê já pode gerar conteúdo com IA gratuita!`);
-                    updateGroqStatus();
-                } else {
-                    alert(`❌ FALHA NA CONEXÃO\n\nErro: ${result.error}\n\nVerifique sua chave do Groq.`);
-                }
-            } catch (error) {
-                alert('❌ Erro inesperado: ' + error.message);
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            }
-        });
-    }
-
-    // Save Gemini API Key
-    document.getElementById('save-api-key-btn').addEventListener('click', () => {
-        const apiKey = document.getElementById('api-key-input').value.trim();
-
-        if (!apiKey) {
-            showToast('Por favor, insira uma API Key', 'error');
-            return;
-        }
-
-        aiGenerator.saveApiKey(apiKey);
-        showToast('API Key do Gemini salva!', 'success');
-        checkApiKeyStatus();
-        document.getElementById('api-key-input').value = '';
-    });
-
-    // Test Gemini Connection
-    document.getElementById('test-connection-btn').addEventListener('click', async () => {
-        const btn = document.getElementById('test-connection-btn');
-        const originalText = btn.textContent;
-        btn.textContent = 'Testando...';
-        btn.disabled = true;
-
-        try {
-            const prevProvider = aiGenerator.provider;
-            aiGenerator.provider = 'gemini';
-            const result = await aiGenerator.testConnection();
-            aiGenerator.provider = prevProvider;
-
-            if (result.success) {
-                alert(`✅ CONECTADO AO GEMINI!\n\nModelo: ${result.model}`);
-            } else {
-                if (result.error === "GOOGLE_ACCOUNT_ERROR") {
-                    alert(
-                        "🚨 BLOQUEIO DE CONTA DETECTADO\n\n" +
-                        "Recomendamos usar o Groq como alternativa gratuita!\n\n" +
-                        "Ou tente criar uma nova chave em um NOVO projeto no AI Studio."
-                    );
-                } else {
-                    alert(`❌ FALHA NA CONEXÃO\n\nErro: ${result.error}`);
-                }
-            }
-        } catch (error) {
-            alert('❌ Erro inesperado: ' + error.message);
-        } finally {
-            btn.textContent = originalText;
-            btn.disabled = false;
+        const btnText = document.querySelector('.generate-btn .btn-text');
+        if (btnText) {
+            btnText.textContent = active ? 'Criar Rascunho' : 'Gerar Conteúdo';
         }
     });
+}
 
-    // Manual Mode Toggle
-    const manualToggle = document.getElementById('manual-mode-toggle');
-    if (manualToggle) {
-        manualToggle.checked = aiGenerator.manualMode;
-        manualToggle.addEventListener('change', (e) => {
-            const active = e.target.checked;
-            aiGenerator.setManualMode(active);
-            showToast(active ? 'Modo Manual ativado' : 'IA ativada', 'info');
-            updateGroqStatus();
-            checkApiKeyStatus();
+// Export data
+document.getElementById('export-data-btn').addEventListener('click', () => {
+    contentManager.exportAllData();
+    showToast('Dados exportados!', 'success');
+});
 
-            const btnText = document.querySelector('.generate-btn .btn-text');
-            if (btnText) {
-                btnText.textContent = active ? 'Criar Rascunho' : 'Gerar Conteúdo';
-            }
-        });
-    }
+// Import data
+document.getElementById('import-data-btn').addEventListener('click', () => {
+    document.getElementById('import-file-input').click();
+});
 
-    // Export data
-    document.getElementById('export-data-btn').addEventListener('click', () => {
-        contentManager.exportAllData();
-        showToast('Dados exportados!', 'success');
-    });
-
-    // Import data
-    document.getElementById('import-data-btn').addEventListener('click', () => {
-        document.getElementById('import-file-input').click();
-    });
-
-    document.getElementById('import-file-input').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const success = contentManager.importData(event.target.result);
-                if (success) {
-                    showToast('Dados importados com sucesso!', 'success');
-                    updateDashboardStats();
-                    contentManager.renderRecentContent();
-                } else {
-                    showToast('Erro ao importar dados', 'error');
-                }
-            };
-            reader.readAsText(file);
-        }
-    });
-
-    // Clear all data
-    document.getElementById('clear-data-btn').addEventListener('click', () => {
-        if (confirm('Deseja realmente limpar TODOS os dados? Esta ação não pode ser desfeita!')) {
-            if (confirm('Tem certeza absoluta? Todos os conteúdos salvos serão perdidos.')) {
-                contentManager.clearAll();
-                profileManager.resetToDefault();
-                localStorage.removeItem('discovered_models');
-                showToast('Todos os dados foram limpos', 'info');
+document.getElementById('import-file-input').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const success = contentManager.importData(event.target.result);
+            if (success) {
+                showToast('Dados importados com sucesso!', 'success');
                 updateDashboardStats();
                 contentManager.renderRecentContent();
-                profileManager.renderProfileEditor(currentProfileTab);
+            } else {
+                showToast('Erro ao importar dados', 'error');
             }
+        };
+        reader.readAsText(file);
+    }
+});
+
+// Clear all data
+document.getElementById('clear-data-btn').addEventListener('click', () => {
+    if (confirm('Deseja realmente limpar TODOS os dados? Esta ação não pode ser desfeita!')) {
+        if (confirm('Tem certeza absoluta? Todos os conteúdos salvos serão perdidos.')) {
+            contentManager.clearAll();
+            profileManager.resetToDefault();
+            localStorage.removeItem('discovered_models');
+            showToast('Todos os dados foram limpos', 'info');
+            updateDashboardStats();
+            contentManager.renderRecentContent();
+            profileManager.renderProfileEditor(currentProfileTab);
         }
-    });
-
-    // Initial status update
-    updateGroqStatus();
-    checkApiKeyStatus();
-}
-
-function updateProviderUI() {
-    const groqSettings = document.getElementById('groq-settings');
-    const geminiSettings = document.getElementById('gemini-settings');
-
-    if (aiGenerator.provider === 'groq') {
-        groqSettings.style.opacity = '1';
-        geminiSettings.style.opacity = '0.5';
-    } else {
-        groqSettings.style.opacity = '0.5';
-        geminiSettings.style.opacity = '1';
     }
-}
+});
 
-function updateGroqStatus() {
-    const statusDiv = document.getElementById('groq-status');
-    if (!statusDiv) return;
+/* Obsolete UI functions removed */
 
-    if (aiGenerator.manualMode) {
-        statusDiv.innerHTML = '<div class="status-message info">✨ Modo Manual Ativo</div>';
-        return;
-    }
-
-    if (aiGenerator.groqApiKey) {
-        statusDiv.innerHTML = `
-            <div class="status-message success">✓ API Key do Groq configurada</div>
-            <p style="font-size: 0.85rem; color: var(--text-tertiary); margin-top: 8px;">
-                🚀 Pronto para gerar conteúdo com Llama 3.3 70B!
-            </p>
-        `;
-    } else {
-        statusDiv.innerHTML = `
-            <div class="status-message error">⚠️ API Key do Groq não configurada</div>
-            <p style="font-size: 0.85rem; color: var(--text-tertiary); margin-top: 8px;">
-                Obtenha sua chave gratuita em <a href="https://console.groq.com/keys" target="_blank" style="color: #4facfe;">console.groq.com</a>
-            </p>
-        `;
-    }
-}
-
-function checkApiKeyStatus() {
-    const statusDiv = document.getElementById('api-key-status');
-    if (!statusDiv) return;
-
-    if (aiGenerator.manualMode) {
-        statusDiv.innerHTML = '<div class="status-message info">✨ Modo Manual Ativo</div>';
-        return;
-    }
-
-    if (aiGenerator.apiKey) {
-        statusDiv.innerHTML = '<div class="status-message success">✓ API Key do Gemini configurada</div>';
-    } else {
-        statusDiv.innerHTML = '<div class="status-message error">⚠️ API Key não configurada</div>';
-    }
-}
+/* Status functions removed */
 
 // ===================================
 // Toast Notifications

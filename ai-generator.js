@@ -5,8 +5,6 @@
 class AIGenerator {
     constructor(profileManager) {
         this.profileManager = profileManager;
-        this.apiKey = this.loadApiKey();
-        this.groqApiKey = this.loadGroqApiKey();
         this.manualMode = this.loadManualMode();
         this.provider = this.loadProvider(); // 'groq' or 'gemini'
     }
@@ -14,24 +12,6 @@ class AIGenerator {
     // ===================================
     // Configuration Management
     // ===================================
-
-    loadApiKey() {
-        return (localStorage.getItem('gemini_api_key') || '').trim();
-    }
-
-    saveApiKey(key) {
-        this.apiKey = key.trim();
-        localStorage.setItem('gemini_api_key', this.apiKey);
-    }
-
-    loadGroqApiKey() {
-        return (localStorage.getItem('groq_api_key') || '').trim();
-    }
-
-    saveGroqApiKey(key) {
-        this.groqApiKey = key.trim();
-        localStorage.setItem('groq_api_key', this.groqApiKey);
-    }
 
     loadProvider() {
         return localStorage.getItem('ai_provider') || 'groq'; // Default to Groq
@@ -43,24 +23,8 @@ class AIGenerator {
     }
 
     hasApiKey() {
-        // In production (Netlify), API key is on the server
-        const isProduction = window.location.hostname !== 'localhost' &&
-            window.location.hostname !== '127.0.0.1' &&
-            window.location.protocol !== 'file:';
-
-        if (isProduction) {
-            return true; // Key is configured on server
-        }
-
-        // Local development - check localStorage
-        if (this.provider === 'groq') {
-            return this.groqApiKey.length > 0;
-        }
-        return this.apiKey.length > 0;
-    }
-
-    getCurrentApiKey() {
-        return this.provider === 'groq' ? this.groqApiKey : this.apiKey;
+        // Now keys are managed on the server (Vercel)
+        return true;
     }
 
     loadManualMode() {
@@ -227,15 +191,12 @@ IMPORTANTE: Gere APENAS o texto do post, sem introduções, explicações ou com
 
     async testGroqConnection() {
         try {
-            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            const response = await fetch('/api/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.groqApiKey}`
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile',
                     messages: [{ role: 'user', content: 'Diga apenas: OK' }],
+                    provider: 'groq',
                     max_tokens: 10
                 })
             });
@@ -246,31 +207,35 @@ IMPORTANTE: Gere APENAS o texto do post, sem introduções, explicações ou com
                 return { success: true, provider: 'Groq', model: 'llama-3.3-70b-versatile' };
             }
 
-            return { success: false, error: data.error?.message || 'Falha na conexão com Groq' };
+            return { success: false, error: data.error?.message || data.error || 'Falha na conexão com Groq' };
         } catch (e) {
             return { success: false, error: e.message };
         }
     }
 
     async testGeminiConnection() {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`;
         try {
-            const res = await fetch(url, {
+            const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: "Oi" }] }] })
+                body: JSON.stringify({
+                    messages: [{ role: 'user', content: 'Diga apenas: OK' }],
+                    provider: 'gemini',
+                    max_tokens: 10
+                })
             });
-            const data = await res.json().catch(() => ({}));
 
-            if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            const data = await response.json();
+
+            if (response.ok && data.choices?.[0]?.message?.content) {
                 return { success: true, provider: 'Gemini', model: 'gemini-2.0-flash' };
             }
 
-            const rawMsg = (data.error?.message || JSON.stringify(data) || "").toLowerCase();
+            const rawMsg = (data.error?.message || data.error || JSON.stringify(data) || "").toLowerCase();
             if (rawMsg.includes("must contain") || rawMsg.includes("empty") || rawMsg.includes("quota")) {
                 return { success: false, error: "GOOGLE_ACCOUNT_ERROR" };
             }
-            return { success: false, error: data.error?.message || "Falha na conexão" };
+            return { success: false, error: data.error?.message || data.error || "Falha na conexão" };
         } catch (e) {
             return { success: false, error: e.message };
         }

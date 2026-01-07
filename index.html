@@ -25,6 +25,9 @@
     <!-- PDF.js for PDF text extraction -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -66,12 +69,14 @@
     <!-- iOS Install Banner -->
     <div class="ios-install-banner" id="ios-install-banner" style="display: none;">
         <div class="ios-install-content">
-            <span class="ios-install-icon">📲</span>
+            <span class="ios-install-icon"><i data-lucide="smartphone"></i></span>
             <div class="ios-install-text">
                 <strong>Instale o App!</strong>
-                <span>Toque em <span class="share-icon">⬆️</span> e selecione "Adicionar à Tela de Início"</span>
+                <span>Toque em <span class="share-icon"><i data-lucide="share"></i></span> e selecione "Adicionar à Tela
+                    de Início"</span>
             </div>
-            <button class="ios-install-close" id="ios-install-close" aria-label="Fechar">✕</button>
+            <button class="ios-install-close" id="ios-install-close" aria-label="Fechar"><i
+                    data-lucide="x"></i></button>
         </div>
     </div>
 
@@ -79,7 +84,7 @@
     <header class="app-header">
         <div class="header-content">
             <div class="logo-section">
-                <div class="logo-icon">🎤</div>
+                <div class="logo-icon"><i data-lucide="mic"></i></div>
                 <div class="logo-text">
                     <h1>Artist Marketing</h1>
                     <span class="subtitle">AI Assistant</span>
@@ -87,15 +92,15 @@
             </div>
             <nav class="header-nav">
                 <button class="nav-btn" data-view="dashboard" aria-label="Dashboard">
-                    <span class="icon">💬</span>
+                    <span class="icon"><i data-lucide="message-circle"></i></span>
                     <span class="label">Chat</span>
                 </button>
                 <button class="nav-btn" data-view="profile" aria-label="Profile Manager">
-                    <span class="icon">👤</span>
+                    <span class="icon"><i data-lucide="user"></i></span>
                     <span class="label">Perfil</span>
                 </button>
                 <button class="nav-btn" data-view="knowledge" aria-label="Briefings">
-                    <span class="icon">📋</span>
+                    <span class="icon"><i data-lucide="folder-kanban"></i></span>
                     <span class="label">Briefings</span>
                 </button>
             </nav>
@@ -103,9 +108,9 @@
             <div class="artist-selector" id="artist-selector" style="display: none;">
                 <div class="artist-dropdown-wrapper">
                     <button class="artist-dropdown-btn" id="artist-dropdown-btn">
-                        <span class="artist-icon">🎤</span>
+                        <span class="artist-icon"><i data-lucide="mic"></i></span>
                         <span class="artist-name" id="current-artist-name">Selecione um artista</span>
-                        <span class="dropdown-arrow">▼</span>
+                        <span class="dropdown-arrow"><i data-lucide="chevron-down"></i></span>
                     </button>
                     <div class="artist-dropdown-menu" id="artist-dropdown-menu">
                         <div class="artist-list" id="artist-list">
@@ -113,7 +118,7 @@
                         </div>
                         <hr class="dropdown-divider">
                         <button class="add-artist-btn" id="add-artist-btn">
-                            <span>➕</span> Adicionar Artista
+                            <i data-lucide="plus"></i> Adicionar Artista
                         </button>
                     </div>
                 </div>
@@ -121,8 +126,9 @@
             <!-- User Info -->
             <div class="user-info" id="user-info" style="display: none;">
                 <span class="user-email" id="header-user-email"></span>
-                <a href="/admin.html" class="admin-link" id="admin-link" style="display: none;">🔧 Admin</a>
-                <button class="logout-btn" id="header-logout-btn" title="Sair">🚪</button>
+                <a href="/admin.html" class="admin-link" id="admin-link" style="display: none;"><i
+                        data-lucide="wrench"></i> Admin</a>
+                <button class="logout-btn" id="header-logout-btn" title="Sair"><i data-lucide="log-out"></i></button>
             </div>
         </div>
     </header>
@@ -134,7 +140,7 @@
             <div class="chat-dashboard">
                 <!-- Platform Selector -->
                 <div class="platform-selector">
-                    <span class="platform-label">🎯</span>
+                    <span class="platform-label"><i data-lucide="target"></i></span>
                     <select id="platform-select">
                         <option value="instagram">Instagram</option>
                         <option value="twitter">Twitter/X</option>
@@ -155,20 +161,20 @@
                 <!-- Quick Actions (only shown when empty) -->
                 <div class="chat-quick-actions" id="chat-quick-actions">
                     <button class="quick-action-btn" data-prompt="Preciso de um post estratégico">
-                        📝 Post
+                        <i data-lucide="file-text"></i> Post
                     </button>
                     <button class="quick-action-btn"
                         data-prompt="Vou lançar uma música nova e preciso de uma estratégia completa">
-                        🚀 Lançamento
+                        <i data-lucide="rocket"></i> Lançamento
                     </button>
                     <button class="quick-action-btn" data-prompt="Preciso divulgar um show">
-                        🎤 Show
+                        <i data-lucide="mic"></i> Show
                     </button>
                     <button class="quick-action-btn" data-prompt="Me sugira ideias criativas para esta semana">
-                        💡 Ideias
+                        <i data-lucide="lightbulb"></i> Ideias
                     </button>
                     <button class="quick-action-btn" data-prompt="Quero criar conteúdo de bastidores">
-                        🎬 Bastidores
+                        <i data-lucide="clapperboard"></i> Bastidores
                     </button>
                 </div>
 
@@ -177,17 +183,18 @@
                     <div class="chat-input-wrapper">
                         <textarea id="chat-input" placeholder="Me conta o que você quer criar..." rows="1"></textarea>
                         <button class="chat-send-btn" id="chat-send-btn">
-                            <span>➤</span>
+                            <i data-lucide="send"></i>
                         </button>
                     </div>
                     <div class="chat-options">
-                        <button class="refresh-btn-mobile" id="clear-chat-btn" title="Nova conversa">🔄 Nova
+                        <button class="refresh-btn-mobile" id="clear-chat-btn" title="Nova conversa"><i
+                                data-lucide="refresh-cw"></i> Nova
                             conversa</button>
                         <div class="ai-provider-selector">
                             <span class="ai-label">IA:</span>
                             <select id="chat-ai-provider" class="ai-select">
-                                <option value="groq">🚀 Groq</option>
-                                <option value="gemini">✨ Gemini</option>
+                                <option value="groq">Groq</option>
+                                <option value="gemini">Gemini</option>
                             </select>
                         </div>
                     </div>
@@ -233,7 +240,7 @@
                             Quanto mais detalhes, mais personalizado será o conteúdo gerado.</p>
                     </div>
                     <button class="btn-primary" id="add-knowledge-btn">
-                        <span>+</span> Adicionar Briefing
+                        <i data-lucide="plus"></i> Adicionar Briefing
                     </button>
                 </div>
 
@@ -249,14 +256,14 @@
                         <div class="form-group">
                             <label for="knowledge-category">Categoria</label>
                             <select id="knowledge-category">
-                                <option value="strategy">🎯 Estratégia de Marketing</option>
-                                <option value="briefing">📋 Briefing de Campanha</option>
-                                <option value="voice">🎤 Tom de Voz</option>
-                                <option value="campaign">📢 Campanha Ativa</option>
-                                <option value="release">🎵 Lançamento</option>
-                                <option value="audience">👥 Público-Alvo</option>
-                                <option value="hashtags">#️⃣ Hashtags e Keywords</option>
-                                <option value="other">📝 Outro</option>
+                                <option value="strategy">Estratégia de Marketing</option>
+                                <option value="briefing">Briefing de Campanha</option>
+                                <option value="voice">Tom de Voz</option>
+                                <option value="campaign">Campanha Ativa</option>
+                                <option value="release">Lançamento</option>
+                                <option value="audience">Público-Alvo</option>
+                                <option value="hashtags">Hashtags e Keywords</option>
+                                <option value="other">Outro</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -288,27 +295,27 @@
                         autocorrect="off" autocapitalize="off" spellcheck="false" />
                     <select id="knowledge-filter">
                         <option value="all">Todas as Categorias</option>
-                        <option value="strategy">🎯 Estratégia</option>
-                        <option value="briefing">📋 Briefing</option>
-                        <option value="voice">🎤 Tom de Voz</option>
-                        <option value="campaign">📢 Campanha</option>
-                        <option value="release">🎵 Lançamento</option>
-                        <option value="audience">👥 Público-Alvo</option>
-                        <option value="hashtags">#️⃣ Hashtags</option>
-                        <option value="other">📝 Outro</option>
+                        <option value="strategy">Estratégia</option>
+                        <option value="briefing">Briefing</option>
+                        <option value="voice">Tom de Voz</option>
+                        <option value="campaign">Campanha</option>
+                        <option value="release">Lançamento</option>
+                        <option value="audience">Público-Alvo</option>
+                        <option value="hashtags">Hashtags</option>
+                        <option value="other">Outro</option>
                     </select>
                 </div>
 
                 <!-- Stats -->
                 <div class="knowledge-stats" id="knowledge-stats">
-                    <span>📄 0 documentos</span>
-                    <span>📝 0 caracteres de contexto</span>
+                    <span><i data-lucide="file-text"></i> 0 documentos</span>
+                    <span><i data-lucide="align-left"></i> 0 caracteres de contexto</span>
                 </div>
 
                 <!-- Documents List -->
                 <div id="knowledge-list" class="knowledge-list">
                     <div class="empty-state">
-                        <div class="empty-icon">🎯</div>
+                        <div class="empty-icon"><i data-lucide="folder-kanban"></i></div>
                         <p>Nenhuma estratégia cadastrada ainda</p>
                         <p class="empty-hint">Adicione briefings, estratégias e conteúdos para alimentar a IA</p>
                     </div>
@@ -319,52 +326,25 @@
         <!-- Settings View -->
         <section id="settings-view" class="view-section">
             <div class="settings-container">
-                <h2 class="section-title">⚙️ Configurações</h2>
-                <p class="section-description">Configure a IA e suas chaves de API</p>
+                <h2 class="section-title"><i data-lucide="settings"></i> Configurações</h2>
+                <p class="section-description">Configurações gerais do sistema</p>
 
-                <!-- AI Provider Selection -->
+                <!-- Data Management -->
                 <div class="settings-card">
-                    <h3>🤖 Provedor de IA</h3>
-                    <p class="settings-hint">Escolha qual IA será usada para gerar conteúdo</p>
-                    <div class="form-group">
-                        <label for="ai-provider-select">Provedor Ativo</label>
-                        <select id="ai-provider-select">
-                            <option value="groq">🚀 Groq (LLaMA 3) - Rápido e gratuito</option>
-                            <option value="gemini">✨ Gemini (Google) - Alta qualidade</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Groq API Key -->
-                <div class="settings-card">
-                    <h3>🚀 Groq API Key</h3>
-                    <p class="settings-hint">Obtenha sua chave gratuita em <a href="https://console.groq.com"
-                            target="_blank">console.groq.com</a></p>
-                    <div class="form-group">
-                        <label for="groq-api-key-input">Chave de API do Groq</label>
-                        <input type="password" id="groq-api-key-input" placeholder="gsk_xxxxxxxxxx...">
-                    </div>
+                    <h3><i data-lucide="database"></i> Gerenciamento de Dados</h3>
+                    <p class="settings-hint">Exporte ou limpe seus dados locais</p>
                     <div class="settings-actions">
-                        <button class="btn-secondary" id="test-groq-btn">🔗 Testar Conexão</button>
-                        <button class="btn-primary" id="save-groq-key-btn">💾 Salvar</button>
+                        <button class="btn-secondary" id="export-data-btn"><i data-lucide="download"></i> Exportar
+                            Dados</button>
+                        <button class="btn-secondary" id="import-data-btn"><i data-lucide="upload"></i> Importar
+                            Dados</button>
+                        <input type="file" id="import-file-input" style="display: none;" accept=".json">
                     </div>
-                    <div id="groq-status" class="api-status"></div>
-                </div>
-
-                <!-- Gemini API Key -->
-                <div class="settings-card">
-                    <h3>✨ Gemini API Key</h3>
-                    <p class="settings-hint">Obtenha sua chave em <a href="https://aistudio.google.com"
-                            target="_blank">aistudio.google.com</a></p>
-                    <div class="form-group">
-                        <label for="api-key-input">Chave de API do Gemini</label>
-                        <input type="password" id="api-key-input" placeholder="AIza...">
+                    <div style="margin-top: 1rem;">
+                        <button class="btn-danger" id="clear-data-btn" style="width: 100%;"><i
+                                data-lucide="trash-2"></i> Limpar Todos os
+                            Dados</button>
                     </div>
-                    <div class="settings-actions">
-                        <button class="btn-secondary" id="test-connection-btn">🔗 Testar Conexão</button>
-                        <button class="btn-primary" id="save-api-key-btn">💾 Salvar</button>
-                    </div>
-                    <div id="gemini-status" class="api-status"></div>
                 </div>
             </div>
         </section>
@@ -376,7 +356,7 @@
     <!-- Add Artist Modal -->
     <div class="modal-overlay" id="add-artist-modal" style="display: none;">
         <div class="modal-content">
-            <h3>➕ Adicionar Novo Artista</h3>
+            <h3><i data-lucide="user-plus"></i> Adicionar Novo Artista</h3>
             <div class="form-group">
                 <label for="new-artist-name">Nome do Artista *</label>
                 <input type="text" id="new-artist-name" placeholder="Ex: João Silva" required>

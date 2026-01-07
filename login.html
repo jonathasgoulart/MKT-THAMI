@@ -21,6 +21,9 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         :root {
             --primary-color: #10a37f;
@@ -291,7 +294,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="logo-section">
-                <div class="logo-icon">🎤</div>
+                <div class="logo-icon"><i data-lucide="mic"></i></div>
                 <h1 class="logo-title">Artist Marketing</h1>
                 <p class="logo-subtitle">AI Assistant</p>
             </div>
@@ -571,6 +574,9 @@
                 setLoading(btn, false);
             }
         });
+
+        // Initialize Lucide icons
+        if (window.lucide) lucide.createIcons();
     </script>
 </body>
 

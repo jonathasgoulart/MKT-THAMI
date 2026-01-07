@@ -60,6 +60,34 @@
     --transition-slow: 0.3s ease;
 }
 
+/* Lucide Icons Global Style */
+.lucide {
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: middle;
+    margin-top: -2px;
+}
+
+.icon .lucide,
+.btn-icon .lucide,
+.nav-btn .lucide,
+.logo-icon .lucide {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.stat-icon .lucide {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--primary-color);
+}
+
+.empty-icon .lucide {
+    width: 4rem;
+    height: 4rem;
+    opacity: 0.5;
+}
+
 /* ===================================
    Base Styles
    =================================== */

@@ -145,14 +145,14 @@ class KnowledgeBase {
 
     getCategories() {
         return [
-            { id: 'strategy', name: 'Estratégia de Marketing', icon: '🎯', priority: 1 },
-            { id: 'briefing', name: 'Briefing de Campanha', icon: '📋', priority: 2 },
-            { id: 'voice', name: 'Tom de Voz', icon: '🎤', priority: 3 },
-            { id: 'campaign', name: 'Campanha Ativa', icon: '📢', priority: 4 },
-            { id: 'release', name: 'Lançamento', icon: '🎵', priority: 5 },
-            { id: 'audience', name: 'Público-Alvo', icon: '👥', priority: 6 },
-            { id: 'hashtags', name: 'Hashtags e Keywords', icon: '#️⃣', priority: 7 },
-            { id: 'other', name: 'Outro', icon: '📝', priority: 10 }
+            { id: 'strategy', name: 'Estratégia de Marketing', icon: 'target', priority: 1 },
+            { id: 'briefing', name: 'Briefing de Campanha', icon: 'clipboard-list', priority: 2 },
+            { id: 'voice', name: 'Tom de Voz', icon: 'mic', priority: 3 },
+            { id: 'campaign', name: 'Campanha Ativa', icon: 'megaphone', priority: 4 },
+            { id: 'release', name: 'Lançamento', icon: 'music', priority: 5 },
+            { id: 'audience', name: 'Público-Alvo', icon: 'users', priority: 6 },
+            { id: 'hashtags', name: 'Hashtags e Keywords', icon: 'hash', priority: 7 },
+            { id: 'other', name: 'Outro', icon: 'file-text', priority: 10 }
         ];
     }
 

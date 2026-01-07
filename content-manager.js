@@ -198,13 +198,13 @@ class ContentManager {
 
     // Render content card for library
     renderContentCard(item) {
-        const typeEmojis = {
-            instagram: '📸',
-            facebook: '👍',
-            twitter: '🐦',
-            tiktok: '🎬',
-            email: '✉️',
-            press: '📰'
+        const typeIcons = {
+            instagram: 'instagram',
+            facebook: 'facebook',
+            twitter: 'twitter',
+            tiktok: 'video',
+            email: 'mail',
+            press: 'newspaper'
         };
 
         const typeNames = {
@@ -230,12 +230,12 @@ class ContentManager {
             <div class="content-card" data-id="${item.id}">
                 <div class="content-card-header">
                     <div class="content-type-badge">
-                        <span class="type-icon">${typeEmojis[item.type]}</span>
+                        <span class="type-icon"><i data-lucide="${typeIcons[item.type]}"></i></span>
                         <span class="type-name">${typeNames[item.type]}</span>
                     </div>
                     <div class="content-card-actions">
-                        <button class="icon-btn copy-content-btn" data-id="${item.id}" title="Copiar">📋</button>
-                        <button class="icon-btn delete-content-btn" data-id="${item.id}" title="Excluir">🗑️</button>
+                        <button class="icon-btn copy-content-btn" data-id="${item.id}" title="Copiar"><i data-lucide="copy"></i></button>
+                        <button class="icon-btn delete-content-btn" data-id="${item.id}" title="Excluir"><i data-lucide="trash-2"></i></button>
                     </div>
                 </div>
                 <div class="content-card-body">
@@ -274,6 +274,7 @@ class ContentManager {
 
         container.innerHTML = items.map(item => this.renderContentCard(item)).join('');
         this.attachLibraryEventListeners();
+        if (window.lucide) lucide.createIcons();
     }
 
     // Attach event listeners to library cards
@@ -351,6 +352,7 @@ class ContentManager {
 
         container.innerHTML = recent.map(item => this.renderContentCard(item)).join('');
         this.attachLibraryEventListeners();
+        if (window.lucide) lucide.createIcons();
     }
 }
 

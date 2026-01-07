@@ -26,6 +26,9 @@
     <!-- PDF.js for PDF text extraction -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         .admin-container {
             max-width: 1200px;
@@ -362,7 +365,7 @@
 <body>
     <div class="admin-container">
         <header class="admin-header">
-            <h1>🔧 Painel Administrativo</h1>
+            <h1><i data-lucide="wrench"></i> Painel Administrativo</h1>
             <div style="display: flex; gap: 1rem; align-items: center;">
                 <span id="admin-user-email" style="color: var(--text-secondary);"></span>
                 <a href="/" class="btn-secondary" style="text-decoration: none;">← Voltar ao App</a>
@@ -372,16 +375,16 @@
 
         <!-- Tabs -->
         <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="global-docs">📚 Base Global</button>
-            <button class="admin-tab" data-tab="users">👥 Usuários</button>
-            <button class="admin-tab" data-tab="stats">📊 Estatísticas</button>
+            <button class="admin-tab active" data-tab="global-docs"><i data-lucide="book"></i> Base Global</button>
+            <button class="admin-tab" data-tab="users"><i data-lucide="users"></i> Usuários</button>
+            <button class="admin-tab" data-tab="stats"><i data-lucide="bar-chart-2"></i> Estatísticas</button>
         </div>
 
         <!-- Global Documents Section -->
         <section class="admin-section active" id="global-docs-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2>Base de Conhecimento Global</h2>
-                <button class="btn-primary" id="add-global-doc-btn">+ Novo Documento</button>
+                <button class="btn-primary" id="add-global-doc-btn"><i data-lucide="plus"></i> Novo Documento</button>
             </div>
             <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
                 Documentos globais são visíveis para todos os usuários da plataforma.
@@ -435,14 +438,14 @@
                 <div class="form-group">
                     <label for="doc-category">Categoria</label>
                     <select id="doc-category" required>
-                        <option value="strategy">🎯 Estratégia de Marketing</option>
-                        <option value="briefing">📋 Briefing de Campanha</option>
-                        <option value="voice">🎤 Tom de Voz</option>
-                        <option value="campaign">📢 Campanha Ativa</option>
-                        <option value="release">🎵 Lançamento</option>
-                        <option value="audience">👥 Público-Alvo</option>
-                        <option value="hashtags">#️⃣ Hashtags e Keywords</option>
-                        <option value="other">📝 Outro</option>
+                        <option value="strategy">Estratégia de Marketing</option>
+                        <option value="briefing">Briefing de Campanha</option>
+                        <option value="voice">Tom de Voz</option>
+                        <option value="campaign">Campanha Ativa</option>
+                        <option value="release">Lançamento</option>
+                        <option value="audience">Público-Alvo</option>
+                        <option value="hashtags">Hashtags e Keywords</option>
+                        <option value="other">Outro</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -641,7 +644,7 @@
                 renderGlobalDocuments();
             } catch (error) {
                 console.error('Error loading global documents:', error);
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div>Erro ao carregar documentos</div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i data-lucide="x-circle"></i></div>Erro ao carregar documentos</div>';
             }
         }
 
@@ -651,7 +654,7 @@
             if (globalDocuments.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">📚</div>
+                        <div class="empty-state-icon"><i data-lucide="book" style="width: 4rem; height: 4rem; opacity: 0.5;"></i></div>
                         <p>Nenhum documento global criado</p>
                         <p style="font-size: 0.9rem; margin-top: 0.5rem;">Crie documentos que serão visíveis para todos os usuários.</p>
                     </div>
@@ -680,8 +683,8 @@
                         </div>
                         <div class="document-content">${escapeHtml(doc.content)}</div>
                         <div class="document-actions">
-                            <button class="btn-secondary" onclick="editDocument('${doc.id}')">✏️ Editar</button>
-                            <button class="btn-danger" onclick="deleteDocument('${doc.id}')">🗑️ Excluir</button>
+                            <button class="btn-secondary" onclick="editDocument('${doc.id}')"><i data-lucide="edit"></i> Editar</button>
+                            <button class="btn-danger" onclick="deleteDocument('${doc.id}')"><i data-lucide="trash-2"></i> Excluir</button>
                         </div>
                     </div>
                 `;
@@ -793,7 +796,7 @@
             if (users.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">👥</div>
+                        <div class="empty-state-icon"><i data-lucide="users" style="width: 4rem; height: 4rem; opacity: 0.5;"></i></div>
                         <p>Nenhum usuário cadastrado</p>
                     </div>
                 `;

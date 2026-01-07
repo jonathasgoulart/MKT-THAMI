@@ -45,51 +45,47 @@ Mantenha todas as informações da artista organizadas:
 
 ## 🚀 Como Usar
 
-### 1. Abrir a Aplicação
-Abra o arquivo `index.html` no seu navegador:
-```
-file:///C:/Users/jonat/Documents/Mkt musical/index.html
-```
+A aplicação agora utiliza um **Proxy Seguro**, o que significa que o usuário final não precisa configurar suas próprias chaves de API. As chaves são gerenciadas centralmente no servidor (Vercel).
 
-### 2. Configurar API Key
-1. Acesse [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Crie ou copie sua API Key do Gemini
-3. Na aplicação, clique em ⚙️ (Configurações)
-4. Cole e salve sua API Key
+### 1. Configuração para o Administrador (Deploy)
+Se você estiver fazendo o deploy da aplicação:
+1. No painel do Vercel, adicione as seguintes variáveis de ambiente:
+   - `GROQ_API_KEY`: Sua chave do Groq.
+   - `GEMINI_API_KEY`: Sua chave do Gemini.
+2. A aplicação detectará automaticamente as chaves através do endpoint `/api/chat`.
 
-### 3. Atualizar Perfil da THAMI
-1. Clique em "Perfil"
-2. Preencha todas as abas com informações da artista
-3. Adicione conquistas, eventos e lançamentos
-4. Salve as alterações
+### 2. Atualizar Perfil da THAMI
+1. Clique em "Perfil".
+2. Preencha todas as abas com informações da artista.
+3. Salve as alterações.
 
-### 4. Gerar Conteúdo
-1. No Dashboard, clique no tipo de conteúdo desejado
-2. Preencha o tema e detalhes
-3. Escolha o tom de voz
-4. Clique em "Gerar Conteúdo"
-5. Edite, copie ou salve o resultado
+### 3. Gerar Conteúdo
+1. No Dashboard (Chat), selecione a plataforma desejada.
+2. Converse com o assistente ou use os "Quick Actions".
+3. O assistente usará o contexto do perfil e dos briefings para criar o conteúdo.
 
 ## 📁 Estrutura do Projeto
 
 ```
 Mkt musical/
+├── api/
+│   └── chat.js             # Proxy Seguro (Vercel Function)
 ├── index.html              # Estrutura principal da aplicação
 ├── styles.css              # Design system e estilos
 ├── app.js                  # Controlador principal
 ├── thami-profile.js        # Gerenciamento de perfil
-├── ai-generator.js         # Integração com Gemini AI
-├── content-manager.js      # Biblioteca de conteúdo
-└── README.md              # Este arquivo
+├── ai-generator.js         # Integração com IAs via Proxy
+├── chat-assistant.js       # Lógica do assistente de chat
+└── README.md               # Este arquivo
 ```
 
 ## 🛠️ Tecnologias
 
-- **HTML5** - Estrutura semântica
-- **CSS3** - Design moderno com variáveis CSS
-- **Vanilla JavaScript** - Sem dependências externas
-- **Google Gemini API** - IA para geração de conteúdo
-- **LocalStorage** - Persistência de dados no navegador
+- **HTML5 / CSS3** - Interface moderna e responsiva.
+- **Vanilla JavaScript** - Lógica do frontend sem frameworks pesados.
+- **Vercel Functions (Node.js)** - Proxy seguro para proteger as chaves de API.
+- **Groq & Gemini** - Modelos de IA de última geração.
+- **Supabase** - Autenticação e persistência de dados em nuvem.
 
 ## 💡 Dicas para Melhores Resultados
 
@@ -111,12 +107,11 @@ No tema, seja claro e detalhado:
 ### Edite e Personalize
 O conteúdo gerado é uma excelente base, mas sempre revise antes de publicar!
 
-## 🔒 Privacidade
+## 🔒 Segurança e Privacidade
 
-- ✅ Todos os dados são armazenados **localmente** no navegador
-- ✅ Nenhuma informação é enviada para servidores externos
-- ✅ A API Key fica apenas no seu navegador
-- ✅ Você controla seus dados completamente
+- **Chaves Protegidas**: As API Keys **nunca** são expostas no navegador. Todas as requisições passam por um proxy no backend.
+- **Dados do Artista**: As informações de perfil podem ser salvas localmente ou sincronizadas de forma segura via Supabase.
+- **Sem Exposição**: Ao contrário da versão anterior, ninguém pode "roubar" sua chave inspecionando o código da página.
 
 ## 📊 Tipos de Conteúdo
 
@@ -163,15 +158,9 @@ O conteúdo gerado é uma excelente base, mas sempre revise antes de publicar!
 
 ## 🐛 Solução de Problemas
 
-### Conteúdo não está sendo gerado
-- Verifique se a API Key está configurada corretamente
-- Confirme sua conexão com a internet
-- Verifique se preencheu o campo "Tema ou Assunto"
-
-### API Key inválida
-- Obtenha uma nova chave em [Google AI Studio](https://makersuite.google.com/app/apikey)
-- Certifique-se de copiar a chave completa
-- Salve novamente nas configurações
+### Erro de Conexão com IA
+- Verifique se as variáveis `GROQ_API_KEY` ou `GEMINI_API_KEY` estão configuradas corretamente no Vercel.
+- Verifique se o deploy das Serverless Functions foi concluído com sucesso.
 
 ### Dados não estão salvando
 - Verifique se o navegador permite LocalStorage

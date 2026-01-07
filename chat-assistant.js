@@ -475,37 +475,39 @@ Responda SEMPRE em Português do Brasil, usando linguagem natural e contemporân
 
     getQuickPrompts() {
         return [
-            { icon: '📸', text: 'Instagram Strategy', prompt: 'Preciso de um post estratégico para Instagram' },
-            { icon: '🚀', text: 'Lançamento', prompt: 'Vou lançar uma música nova e preciso de uma estratégia completa de divulgação' },
-            { icon: '📢', text: 'Show/Evento', prompt: 'Preciso divulgar um show com uma campanha completa' },
-            { icon: '💡', text: 'Ideia criativa', prompt: 'Me sugira ideias criativas de conteúdo para esta semana' },
-            { icon: '📊', text: 'Calendário', prompt: 'Me ajuda a montar um calendário de conteúdo para os próximos 7 dias' }
+            { icon: 'camera', text: 'Instagram Strategy', prompt: 'Preciso de um post estratégico para Instagram' },
+            { icon: 'rocket', text: 'Lançamento', prompt: 'Vou lançar uma música nova e preciso de uma estratégia completa de divulgação' },
+            { icon: 'megaphone', text: 'Show/Evento', prompt: 'Preciso divulgar um show com uma campanha completa' },
+            { icon: 'lightbulb', text: 'Ideia criativa', prompt: 'Me sugira ideias criativas de conteúdo para esta semana' },
+            { icon: 'calendar', text: 'Calendário', prompt: 'Me ajuda a montar um calendário de conteúdo para os próximos 7 dias' }
         ];
     }
 
     getWelcomeMessage() {
         const platform = typeof selectedPlatform !== 'undefined' ? selectedPlatform : 'instagram';
-        const platformEmojis = {
-            instagram: '📸',
-            twitter: '🐦',
-            facebook: '👍',
-            tiktok: '🎬',
-            youtube: '▶️',
-            email: '✉️',
-            press: '📰',
-            all: '🌐'
+        const platformIcons = {
+            instagram: 'camera',
+            twitter: 'twitter',
+            facebook: 'facebook',
+            tiktok: 'video',
+            youtube: 'play',
+            email: 'mail',
+            press: 'newspaper',
+            all: 'globe'
         };
-        const emoji = platformEmojis[platform] || '📱';
+        const icon = platformIcons[platform] || 'smartphone';
         const stats = this.getMemoryStats();
 
         let memoryInfo = '';
         if (stats.insights > 0 || stats.facts > 0) {
-            memoryInfo = `\n\n🧠 **Memória ativa:** ${stats.insights} insight${stats.insights !== 1 ? 's' : ''}, ${stats.facts} fato${stats.facts !== 1 ? 's' : ''} aprendido${stats.facts !== 1 ? 's' : ''}`;
+            memoryInfo = `\n\n<i data-lucide="brain" style="width: 1.2em; height: 1.2em; vertical-align: middle;"></i> **Memória ativa:** ${stats.insights} insight${stats.insights !== 1 ? 's' : ''}, ${stats.facts} fato${stats.facts !== 1 ? 's' : ''} aprendido${stats.facts !== 1 ? 's' : ''}`;
         }
 
-        return `👋 **Olá! Sou seu estrategista de marketing musical.**
+        const platformNameHtml = `<i data-lucide="${icon}" style="width: 1.2em; height: 1.2em; vertical-align: middle;"></i> **Plataforma:** ${platform.charAt(0).toUpperCase() + platform.slice(1)}`;
 
-${emoji} **Plataforma:** ${platform.charAt(0).toUpperCase() + platform.slice(1)}${memoryInfo}
+        return `<i data-lucide="sparkles" style="width: 1.5em; height: 1.5em; vertical-align: middle; color: var(--primary-color);"></i> **Olá! Sou seu estrategista de marketing musical.**
+
+${platformNameHtml}${memoryInfo}
 
 Me conta o que você quer criar! Quanto mais você usar, mais eu aprendo sobre você.`;
     }
